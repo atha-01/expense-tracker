@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
+import { ExpenseProvider } from './controllers/ExpenseContext.jsx';
 import { ThemeProvider } from './controllers/ThemeContext.jsx';
 import { AuthProvider } from './controllers/AuthContext.jsx';
 import './styles/global.css';
@@ -11,7 +12,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <App />
+          <ExpenseProvider>
+            <App />
+          </ExpenseProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

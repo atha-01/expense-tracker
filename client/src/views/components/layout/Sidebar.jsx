@@ -4,12 +4,12 @@ import { useAuth } from '../../../controllers/AuthContext';
 import styles from './Sidebar.module.css';
 
 const navItems = [
-  { path: 'home',     label: 'Dashboard',  icon: '🏠' },
-  { path: 'income',   label: 'Income',     icon: '💰' },
-  { path: 'expenses', label: 'Expenses',   icon: '💸' },
-  { path: 'bills',    label: 'Bills',      icon: '🧾' },
-  { path: 'accounts', label: 'Accounts',   icon: '🏦' },
-  { path: 'budget',   label: 'Budget',     icon: '📊' },
+  { path: '/dashboard/home',     label: 'Dashboard',  icon: '🏠' },
+  { path: '/dashboard/income',   label: 'Income',     icon: '💰' },
+  { path: '/dashboard/expenses', label: 'Expenses',   icon: '💸' },
+  { path: '/dashboard/bills',    label: 'Bills',      icon: '🧾' },
+  { path: '/dashboard/accounts', label: 'Accounts',   icon: '🏦' },
+  { path: '/dashboard/budget',   label: 'Budget',     icon: '📊' },
 ];
 
 export default function Sidebar() {

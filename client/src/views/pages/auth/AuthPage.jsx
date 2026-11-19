@@ -11,12 +11,12 @@ export default function AuthPage() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
 
-  function handleChange(e) {
+  function handleChange(e) {      // e is short for event
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
   function handleSubmit(e) {
-    e.preventDefault();
+    e.preventDefault();     // stops browser from reloading the page
     setError('');
 
     if (!formData.email || !formData.password) {
