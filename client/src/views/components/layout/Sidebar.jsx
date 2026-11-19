@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import  { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../controllers/AuthContext';
 import styles from './Sidebar.module.css';
@@ -12,7 +12,7 @@ const navItems = [
   { path: '/dashboard/budget',   label: 'Budget',     icon: '📊' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
@@ -22,8 +22,24 @@ export default function Sidebar() {
     navigate('/login');
   }
 
+  // When a nav link is clicked on mobile, close the drawer
+  function handleNavClick() {
+    if (onClose) {
+      onClose();
+    }
+  }
+
+  // Build the sidebar class — add 'open' class on mobile when isOpen is true
+  let sidebarClass = styles.sidebar;
+  if (collapsed) {
+    sidebarClass = sidebarClass + ' ' + styles.collapsed;
+  }
+  if (isOpen) {
+    sidebarClass = sidebarClass + ' ' + styles.mobileOpen;
+  }
+
   return (
-    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
+    <aside className={sidebarClass}>
       <div className={styles.top}>
         <div className={styles.logo}>
           {collapsed ? '💰' : '💰 SpendWise'}
@@ -34,18 +50,24 @@ export default function Sidebar() {
       </div>
 
       <nav className={styles.nav}>
-        {navItems.map(item => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `${styles.navItem} ${isActive ? styles.active : ''}`
-            }
-          >
-            <span className={styles.icon}>{item.icon}</span>
-            {!collapsed && <span className={styles.label}>{item.label}</span>}
-          </NavLink>
-        ))}
+        {navItems.map(function(item) {
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={handleNavClick}
+              className={function({ isActive }) {
+                if (isActive) {
+                  return styles.navItem + ' ' + styles.active;
+                }
+                return styles.navItem;
+              }}
+            >
+              <span className={styles.icon}>{item.icon}</span>
+              {!collapsed && <span className={styles.label}>{item.label}</span>}
+            </NavLink>
+          );
+        })}
       </nav>
 
       <button className={styles.logoutBtn} onClick={handleLogout}>

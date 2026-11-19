@@ -1,6 +1,7 @@
 .layout {
   display: flex;
   min-height: 100vh;
+  position: relative;
 }
 
 .main {
@@ -8,6 +9,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .content {
@@ -15,4 +17,21 @@
   padding: 24px;
   overflow-y: auto;
   background-color: var(--bg-primary);
+}
+
+/* Dark background that appears behind the sidebar on mobile */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 16px;
+  }
 }

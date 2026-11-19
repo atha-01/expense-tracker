@@ -9,6 +9,26 @@
   flex-shrink: 0;
 }
 
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Hidden on desktop, shown on mobile */
+.hamburger {
+  display: none;
+  font-size: 1.3rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--text-primary);
+  transition: background-color 0.15s;
+}
+
+.hamburger:hover {
+  background-color: var(--bg-surface-hover);
+}
+
 .title {
   font-size: 1.1rem;
   font-weight: 600;
@@ -57,7 +77,11 @@
   color: var(--text-primary);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
   .userName {
     display: none;
   }

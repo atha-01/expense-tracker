@@ -1,3 +1,4 @@
+// import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTheme } from '../../../controllers/ThemeContext';
 import { useAuth } from '../../../controllers/AuthContext';
@@ -12,7 +13,7 @@ const pageTitles = {
   budget:   'Budget',
 };
 
-export default function Header() {
+export default function Header({ onMenuOpen }) {
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
   const location = useLocation();
@@ -22,7 +23,13 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      <h1 className={styles.title}>{title}</h1>
+      <div className={styles.left}>
+        {/* Hamburger button — only visible on mobile */}
+        <button className={styles.hamburger} onClick={onMenuOpen}>
+          ☰
+        </button>
+        <h1 className={styles.title}>{title}</h1>
+      </div>
 
       <div className={styles.right}>
         <button className={styles.themeBtn} onClick={toggleTheme}>

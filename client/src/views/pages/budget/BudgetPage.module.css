@@ -1,0 +1,268 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.inlineRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.field input {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.field input:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.submitBtn {
+  padding: 10px 20px;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+  height: 42px;
+}
+
+.submitBtn:hover {
+  opacity: 0.85;
+}
+
+.error {
+  color: var(--expense-red);
+  font-size: 0.85rem;
+}
+
+/* Overview section */
+.overviewTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.overviewMonth {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.overviewHealth {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.overviewNumbers {
+  display: flex;
+  gap: 24px;
+}
+
+.overviewStat {
+  text-align: right;
+}
+
+.statLabel {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2px;
+}
+
+.statValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.positive {
+  color: var(--income-green);
+}
+
+.negative {
+  color: var(--expense-red);
+}
+
+/* Progress bar */
+.progressTrack {
+  width: 100%;
+  height: 12px;
+  background-color: var(--bg-primary);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progressBar {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.barGreen { background-color: var(--income-green); }
+.barAmber { background-color: var(--warning-amber); }
+.barRed   { background-color: var(--expense-red); }
+
+.progressLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Category rows */
+.catRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.catRow:last-child {
+  border-bottom: none;
+}
+
+.catLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 140px;
+}
+
+.catIcon {
+  font-size: 1.3rem;
+}
+
+.catLabel {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.catRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.catTrack {
+  width: 120px;
+  height: 8px;
+  background-color: var(--bg-primary);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.catBar {
+  height: 100%;
+  background-color: var(--primary);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.catAmount {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 70px;
+  text-align: right;
+}
+
+.catPercent {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* Empty state */
+.emptyCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.emptyText {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 600px) {
+  .inlineRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .submitBtn {
+    height: auto;
+    width: 100%;
+  }
+
+  .overviewNumbers {
+    gap: 16px;
+  }
+
+  .catTrack {
+    width: 80px;
+  }
+}
