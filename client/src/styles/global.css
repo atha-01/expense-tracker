@@ -9,6 +9,7 @@
   --income-green: #10b981;
   --expense-red: #ef4444;
   --warning-amber: #f59e0b;
+  --warning-bg: #fffbeb;
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
@@ -22,6 +23,7 @@
   --primary-hover: #60a5fa;
   --income-green: #34d399;
   --expense-red: #f87171;
+  --warning-bg: rgba(245, 158, 11, 0.12);
   --warning-amber: #fbbf24;
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }

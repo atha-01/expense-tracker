@@ -1,6 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar.jsx';
 import Header from '../../components/layout/Header.jsx';
+import IncomePage from '../income/IncomePage.jsx';
+import ExpensesPage from '../expenses/ExpensesPage.jsx';
+import BillsPage from '../bills/BillsPage.jsx';
 import HomePage from './HomePage.jsx';
 import styles from './DashboardPage.module.css';
 
@@ -25,9 +28,9 @@ export default function DashboardPage() {
           <Routes>
             <Route index element={<Navigate to="home" replace />} />
             <Route path="home" element={<HomePage />} />
-            <Route path="income"    element={<Placeholder page="Income" />} />
-            <Route path="expenses"  element={<Placeholder page="Expenses" />} />
-            <Route path="bills"     element={<Placeholder page="Bills" />} />
+            <Route path="income" element={<IncomePage />} />
+            <Route path="expenses" element={<ExpensesPage />} />
+            <Route path="bills" element={<BillsPage />} />
             <Route path="accounts"  element={<Placeholder page="Accounts" />} />
             <Route path="budget"    element={<Placeholder page="Budget" />} />
           </Routes>

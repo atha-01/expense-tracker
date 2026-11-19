@@ -1,0 +1,236 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.summaryRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.summaryCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.summaryLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.summaryAmount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.summaryCount {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.green { color: var(--income-green); }
+.amber { color: var(--warning-amber); }
+.red   { color: var(--expense-red); }
+
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.cardTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.field input,
+.field select {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: var(--primary);
+  outline: none;
+}
+
+.error {
+  color: var(--expense-red);
+  font-size: 0.85rem;
+}
+
+.submitBtn {
+  padding: 12px;
+  background-color: var(--primary);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.submitBtn:hover {
+  opacity: 0.85;
+}
+
+.empty {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.billRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-color);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.billRow:last-child {
+  border-bottom: none;
+}
+
+.billLeft {
+  flex: 1;
+}
+
+.billName {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.billMeta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.billRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.billAmount {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+}
+
+.badgePaid {
+  background-color: var(--income-bg);
+  color: var(--income-green);
+}
+
+.badgeUnpaid {
+  background-color: var(--warning-bg);
+  color: var(--warning-amber);
+}
+
+.badgeOverdue {
+  background-color: var(--expense-bg);
+  color: var(--expense-red);
+}
+
+.toggleBtn {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  background-color: var(--bg-primary);
+  transition: background-color 0.15s;
+}
+
+.toggleBtn:hover {
+  background-color: var(--bg-surface-hover);
+  color: var(--text-primary);
+}
+
+.deleteBtn {
+  font-size: 1rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  transition: background-color 0.15s;
+}
+
+.deleteBtn:hover {
+  background-color: var(--expense-bg);
+  color: var(--expense-red);
+}
+
+@media (max-width: 768px) {
+  .summaryRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .summaryRow {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .billRight {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
