@@ -1,131 +1,260 @@
-/* eslint-disable no-unused-vars */
-import React, { createContext, useContext, useState } from 'react';
+import{ createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const ExpenseContext = createContext();
 
 export function ExpenseProvider({ children }) {
+  const { user } = useAuth();
 
-  // Load transactions from browser memory, or start with empty list
-  const [transactions, setTransactions] = useState(function() {
-    const saved = localStorage.getItem('transactions');
-    if (saved) {
-      return JSON.parse(saved);
+  const [transactions, setTransactions] = useState([]);
+  const [bills, setBills] = useState([]);
+  const [accounts, setAccounts] = useState([]);
+  const [monthlyBudget, setMonthlyBudget] = useState(0);
+
+  // Helper to create the Authorization header with the user's JWT token
+  function getAuthHeaders() {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    if (user && user.token) {
+      headers['Authorization'] = 'Bearer ' + user.token;
     }
-    return [];
-  });
+    return headers;
+  }
 
-  // Load bills from browser memory, or start with empty list
-  const [bills, setBills] = useState(function() {
-    const saved = localStorage.getItem('bills');
-    if (saved) {
-      return JSON.parse(saved);
+  // Load all user data from the database whenever the user logs in
+  useEffect(function() {
+    if (!user || !user.token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTransactions([]);
+      setBills([]);
+      setAccounts([]);
+      setMonthlyBudget(0);
+      return;
     }
-    return [];
-  });
 
-  // Load accounts from browser memory, or start with empty list
-  const [accounts, setAccounts] = useState(function() {
-    const saved = localStorage.getItem('accounts');
-    if (saved) {
-      return JSON.parse(saved);
+    const headers = getAuthHeaders();
+
+    // 1. Fetch transactions
+    fetch('http://localhost:5000/api/transactions', { headers: headers })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (Array.isArray(data)) {
+          const formatted = data.map(function(item) {
+            return { ...item, id: item._id };
+          });
+          setTransactions(formatted);
+        }
+      })
+      .catch(function(err) { console.error('Error fetching transactions:', err); });
+
+    // 2. Fetch bills
+    fetch('http://localhost:5000/api/bills', { headers: headers })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (Array.isArray(data)) {
+          const formatted = data.map(function(item) {
+            return { ...item, id: item._id };
+          });
+          setBills(formatted);
+        }
+      })
+      .catch(function(err) { console.error('Error fetching bills:', err); });
+
+    // 3. Fetch accounts
+    fetch('http://localhost:5000/api/accounts', { headers: headers })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (Array.isArray(data)) {
+          const formatted = data.map(function(item) {
+            return { ...item, id: item._id };
+          });
+          setAccounts(formatted);
+        }
+      })
+      .catch(function(err) { console.error('Error fetching accounts:', err); });
+
+    // 4. Fetch budget
+    fetch('http://localhost:5000/api/budget', { headers: headers })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data && data.monthlyLimit !== undefined) {
+          setMonthlyBudget(data.monthlyLimit);
+        }
+      })
+      .catch(function(err) { console.error('Error fetching budget:', err); });
+  }, [user]);
+
+  // --------------------------------------------------------------------------
+  // Transactions (Income / Expense)
+  // --------------------------------------------------------------------------
+  async function addTransaction(newTransaction) {
+    try {
+      const response = await fetch('http://localhost:5000/api/transactions', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(newTransaction),
+      });
+      const savedData = await response.json();
+      const itemWithId = { ...savedData, id: savedData._id };
+
+      setTransactions(function(prev) {
+        return [itemWithId, ...prev];
+      });
+    } catch (err) {
+      console.error('Error adding transaction:', err);
     }
-    return [];
-  });
+  }
 
-  // Load monthly budget limit from browser memory, or default to 0
-  const [monthlyBudget, setMonthlyBudget] = useState(function() {
-    const saved = localStorage.getItem('budget');
-    if (saved) {
-      return Number(saved);
+  async function deleteTransaction(id) {
+    try {
+      await fetch('http://localhost:5000/api/transactions/' + id, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+
+      setTransactions(function(prev) {
+        return prev.filter(function(item) {
+          return item.id !== id;
+        });
+      });
+    } catch (err) {
+      console.error('Error deleting transaction:', err);
     }
-    return 0;
-  });
-
-  // Add a new income or expense transaction
-  function addTransaction(newTransaction) {
-    // NOTE: [...transactions] means "copy all old items into a new list"
-    // then add the new one at the front
-    const updatedList = [newTransaction, ...transactions];
-    setTransactions(updatedList);
-    localStorage.setItem('transactions', JSON.stringify(updatedList));
   }
 
-  // Remove a transaction by matching its id
-  function deleteTransaction(id) {
-    const updatedList = transactions.filter(function(item) {
-      return item.id !== id;
-    });
-    setTransactions(updatedList);
-    localStorage.setItem('transactions', JSON.stringify(updatedList));
+  // --------------------------------------------------------------------------
+  // Bills
+  // --------------------------------------------------------------------------
+  async function addBill(newBill) {
+    try {
+      const response = await fetch('http://localhost:5000/api/bills', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(newBill),
+      });
+      const savedData = await response.json();
+      const itemWithId = { ...savedData, id: savedData._id };
+
+      setBills(function(prev) {
+        return [itemWithId, ...prev];
+      });
+    } catch (err) {
+      console.error('Error adding bill:', err);
+    }
   }
 
-  // Add a new bill
-  function addBill(newBill) {
-    const updatedList = [newBill, ...bills];
-    setBills(updatedList);
-    localStorage.setItem('bills', JSON.stringify(updatedList));
+  async function updateBillStatus(id, newStatus) {
+    try {
+      const response = await fetch('http://localhost:5000/api/bills/' + id, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const updatedData = await response.json();
+
+      setBills(function(prev) {
+        return prev.map(function(bill) {
+          if (bill.id === id) {
+            return { ...updatedData, id: updatedData._id };
+          }
+          return bill;
+        });
+      });
+    } catch (err) {
+      console.error('Error updating bill:', err);
+    }
   }
 
-  // Delete a bill by its id
-  function deleteBill(id) {
-    const updatedList = bills.filter(function(item) {
-      return item.id !== id;
-    });
-    setBills(updatedList);
-    localStorage.setItem('bills', JSON.stringify(updatedList));
+  async function deleteBill(id) {
+    try {
+      await fetch('http://localhost:5000/api/bills/' + id, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+
+      setBills(function(prev) {
+        return prev.filter(function(bill) {
+          return bill.id !== id;
+        });
+      });
+    } catch (err) {
+      console.error('Error deleting bill:', err);
+    }
   }
 
-  // Change the status of a bill (e.g. from 'unpaid' to 'paid')
-  function updateBillStatus(id, newStatus) {
-    const updatedList = bills.map(function(bill) {
-      if (bill.id === id) {
-        // NOTE: {...bill, status: newStatus} means "copy all bill fields,
-        // but replace only the status field with the new value"
-        return { ...bill, status: newStatus };
-      }
-      return bill;
-    });
-    setBills(updatedList);
-    localStorage.setItem('bills', JSON.stringify(updatedList));
+  // --------------------------------------------------------------------------
+  // Accounts
+  // --------------------------------------------------------------------------
+  async function addAccount(newAccount) {
+    try {
+      const response = await fetch('http://localhost:5000/api/accounts', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(newAccount),
+      });
+      const savedData = await response.json();
+      const itemWithId = { ...savedData, id: savedData._id };
+
+      setAccounts(function(prev) {
+        return [itemWithId, ...prev];
+      });
+    } catch (err) {
+      console.error('Error adding account:', err);
+    }
   }
 
-  // Add a new account (cash, bank, etc.)
-  function addAccount(newAccount) {
-    const updatedList = [newAccount, ...accounts];
-    setAccounts(updatedList);
-    localStorage.setItem('accounts', JSON.stringify(updatedList));
+  async function deleteAccount(id) {
+    try {
+      await fetch('http://localhost:5000/api/accounts/' + id, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+      });
+
+      setAccounts(function(prev) {
+        return prev.filter(function(account) {
+          return account.id !== id;
+        });
+      });
+    } catch (err) {
+      console.error('Error deleting account:', err);
+    }
   }
 
-  // Delete an account by its id
-  function deleteAccount(id) {
-    const updatedList = accounts.filter(function(item) {
-      return item.id !== id;
-    });
-    setAccounts(updatedList);
-    localStorage.setItem('accounts', JSON.stringify(updatedList));
-  }
-
-  // Save the monthly spending limit
-  function saveBudget(amount) {
-    setMonthlyBudget(amount);
-    localStorage.setItem('budget', amount);
+  // --------------------------------------------------------------------------
+  // Budget
+  // --------------------------------------------------------------------------
+  async function saveBudget(amount) {
+    try {
+      const response = await fetch('http://localhost:5000/api/budget', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ monthlyLimit: amount }),
+      });
+      const savedData = await response.json();
+      setMonthlyBudget(savedData.monthlyLimit);
+    } catch (err) {
+      console.error('Error saving budget:', err);
+    }
   }
 
   return (
-    <ExpenseContext.Provider value={{
-      transactions,
-      bills,
-      accounts,
-      monthlyBudget,
-      addTransaction,
-      deleteTransaction,
-      addBill,
-      deleteBill,
-      updateBillStatus,
-      addAccount,
-      deleteAccount,
-      saveBudget,
-    }}>
+    <ExpenseContext.Provider
+      value={{
+        transactions,
+        bills,
+        accounts,
+        monthlyBudget,
+        addTransaction,
+        deleteTransaction,
+        addBill,
+        updateBillStatus,
+        deleteBill,
+        addAccount,
+        deleteAccount,
+        saveBudget,
+      }}
+    >
       {children}
     </ExpenseContext.Provider>
   );
