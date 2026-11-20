@@ -15,8 +15,8 @@ export default function AuthPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();     // stops browser from reloading the page
+  async function handleSubmit(e) {
+    e.preventDefault();
     setError('');
 
     if (!formData.email || !formData.password) {
@@ -29,18 +29,24 @@ export default function AuthPage() {
       return;
     }
 
-    const userData = {
-      name: formData.name || formData.email.split('@')[0],
-      email: formData.email,
-    };
+    try {
+      if (isLogin) {
+        await login({
+          email: formData.email,
+          password: formData.password,
+        });
+      } else {
+        await register({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+        });
+      }
 
-    if (isLogin) {
-      login(userData);
-    } else {
-      register(userData);
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message);
     }
-
-    navigate('/dashboard');
   }
 
   return (
