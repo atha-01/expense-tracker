@@ -12,6 +12,8 @@ export function ExpenseProvider({ children }) {
   const [monthlyBudget, setMonthlyBudget] = useState(0);
 
   // Helper to create the Authorization header with the user's JWT token
+
+  
   function getAuthHeaders() {
     const headers = {
       'Content-Type': 'application/json',
@@ -23,6 +25,9 @@ export function ExpenseProvider({ children }) {
   }
 
   // Load all user data from the database whenever the user logs in
+
+
+
   useEffect(function() {
     if (!user || !user.token) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -83,11 +88,15 @@ export function ExpenseProvider({ children }) {
         }
       })
       .catch(function(err) { console.error('Error fetching budget:', err); });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  // --------------------------------------------------------------------------
+
+
   // Transactions (Income / Expense)
-  // --------------------------------------------------------------------------
+
+
+
   async function addTransaction(newTransaction) {
     try {
       const response = await fetch('http://localhost:5000/api/transactions', {
@@ -103,6 +112,36 @@ export function ExpenseProvider({ children }) {
       });
     } catch (err) {
       console.error('Error adding transaction:', err);
+    }
+  }
+  async function updateTransaction(id, updatedFields) {
+    try {
+      const response = await fetch('http://localhost:5000/api/transactions/' + id, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(updatedFields),
+      });
+
+      // If the server returned an error, DO NOT overwrite the transaction with error text!
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Update failed:', errorData.message);
+        return;
+      }
+
+      const savedData = await response.json();
+      const itemWithId = { ...savedData, id: savedData._id };
+
+      setTransactions(function(prev) {
+        return prev.map(function(item) {
+          if (item.id === id) {
+            return itemWithId;
+          }
+          return item;
+        });
+      });
+    } catch (err) {
+      console.error('Error updating transaction:', err);
     }
   }
 
@@ -246,6 +285,7 @@ export function ExpenseProvider({ children }) {
         accounts,
         monthlyBudget,
         addTransaction,
+        updateTransaction,
         deleteTransaction,
         addBill,
         updateBillStatus,

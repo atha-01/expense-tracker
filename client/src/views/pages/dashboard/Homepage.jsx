@@ -1,6 +1,4 @@
-/* eslint-disable no-unused-vars */
-// this is the dashboard homepage or dashboard main page
-import React from 'react';
+// import React from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
 import { getBudgetHealth } from '../../../models/constants';
 import styles from './HomePage.module.css';
@@ -8,19 +6,24 @@ import styles from './HomePage.module.css';
 export default function HomePage() {
   const { transactions, monthlyBudget } = useExpense();
 
-  // Step 1: Calculate total income by looping through all transactions
+  // Filter out any corrupted items that don't have amount or type
+  const validTransactions = transactions.filter(function(item) {
+    return item && item.amount !== undefined && item.type !== undefined;
+  });
+
+  // Step 1: Calculate total income safely
   let totalIncome = 0;
-  for (let i = 0; i < transactions.length; i++) {
-    if (transactions[i].type === 'income') {
-      totalIncome = totalIncome + transactions[i].amount;
+  for (let i = 0; i < validTransactions.length; i++) {
+    if (validTransactions[i].type === 'income') {
+      totalIncome = totalIncome + (Number(validTransactions[i].amount) || 0);
     }
   }
 
-  // Step 2: Calculate total expenses
+  // Step 2: Calculate total expenses safely
   let totalExpenses = 0;
-  for (let i = 0; i < transactions.length; i++) {
-    if (transactions[i].type === 'expense') {
-      totalExpenses = totalExpenses + transactions[i].amount;
+  for (let i = 0; i < validTransactions.length; i++) {
+    if (validTransactions[i].type === 'expense') {
+      totalExpenses = totalExpenses + (Number(validTransactions[i].amount) || 0);
     }
   }
 
@@ -30,8 +33,8 @@ export default function HomePage() {
   // Step 4: Get budget health (Good / At Risk / Exceeded)
   let health = getBudgetHealth(totalExpenses, monthlyBudget);
 
-  // Step 5: Get the 5 most recent transactions to show in the list
-  let recentTransactions = transactions.slice(0, 5);
+  // Step 5: Get the 5 most recent valid transactions
+  let recentTransactions = validTransactions.slice(0, 5);
 
   return (
     <div className={styles.page}>
@@ -74,18 +77,19 @@ export default function HomePage() {
           <p className={styles.empty}>No transactions yet. Add your first one!</p>
         )}
 
-        {recentTransactions.map(function(item) {
+        {recentTransactions.map(function(item, index) {
           let isIncome = item.type === 'income';
           let amountClass = isIncome ? styles.amountIncome : styles.amountExpense;
-          let amountText = isIncome ? '+₹' + item.amount : '-₹' + item.amount;
+          let amountValue = Number(item.amount) || 0;
+          let amountText = isIncome ? '+₹' + amountValue.toLocaleString() : '-₹' + amountValue.toLocaleString();
 
           return (
-            <div key={item.id} className={styles.txRow}>
+            <div key={item.id || item._id || index} className={styles.txRow}>
               <div className={styles.txLeft}>
-                <span className={styles.txIcon}>{item.icon}</span>
+                <span className={styles.txIcon}>{item.icon || '💸'}</span>
                 <div>
-                  <p className={styles.txNote}>{item.note || item.category}</p>
-                  <p className={styles.txDate}>{item.date}</p>
+                  <p className={styles.txNote}>{item.note || item.category || 'Transaction'}</p>
+                  <p className={styles.txDate}>{item.date || 'No date'}</p>
                 </div>
               </div>
               <p className={amountClass}>{amountText}</p>

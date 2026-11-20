@@ -1,4 +1,5 @@
-// import React from 'react';
+/* eslint-disable no-unused-vars */
+import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTheme } from '../../../controllers/ThemeContext';
 import { useAuth } from '../../../controllers/AuthContext';
@@ -21,10 +22,13 @@ export default function Header({ onMenuOpen }) {
   const currentPage = location.pathname.split('/').pop();
   const title = pageTitles[currentPage] || 'Dashboard';
 
+  // Safely get user initial and name (won't crash if user or user.name is missing)
+  const userInitial = user && user.name ? user.name.charAt(0).toUpperCase() : '?';
+  const userName = user && user.name ? user.name : 'User';
+
   return (
     <header className={styles.header}>
       <div className={styles.left}>
-        {/* Hamburger button — only visible on mobile */}
         <button className={styles.hamburger} onClick={onMenuOpen}>
           ☰
         </button>
@@ -36,12 +40,14 @@ export default function Header({ onMenuOpen }) {
           {theme === 'light' ? '🌙' : '☀️'}
         </button>
 
-        <div className={styles.userBadge}>
-          <div className={styles.avatar}>
-            {user.name.charAt(0).toUpperCase()}
+        {user && (
+          <div className={styles.userBadge}>
+            <div className={styles.avatar}>
+              {userInitial}
+            </div>
+            <span className={styles.userName}>{userName}</span>
           </div>
-          <span className={styles.userName}>{user.name}</span>
-        </div>
+        )}
       </div>
     </header>
   );

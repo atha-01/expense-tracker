@@ -1,12 +1,12 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
 import { INCOME_CATEGORIES, ACCOUNT_TYPES } from '../../../models/constants';
 import styles from './IncomePage.module.css';
 
 export default function IncomePage() {
-  const { transactions, addTransaction, deleteTransaction } = useExpense();
+  const { transactions, addTransaction, updateTransaction, deleteTransaction } = useExpense();
 
-  // Form field values — one state variable for each field
+  // Form field values
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('salary');
   const [account, setAccount] = useState('bank');
@@ -14,7 +14,10 @@ export default function IncomePage() {
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
 
-  // Filter only income transactions from the full list
+  // Editing state: holds the id of the transaction currently being edited, or null
+  const [editingId, setEditingId] = useState(null);
+
+  // Filter only income transactions
   let incomeList = [];
   for (let i = 0; i < transactions.length; i++) {
     if (transactions[i].type === 'income') {
@@ -28,7 +31,6 @@ export default function IncomePage() {
     totalIncome = totalIncome + incomeList[i].amount;
   }
 
-  // Find the icon for a category id (e.g. 'salary' → '💼')
   function getCategoryIcon(categoryId) {
     for (let i = 0; i < INCOME_CATEGORIES.length; i++) {
       if (INCOME_CATEGORIES[i].id === categoryId) {
@@ -38,7 +40,6 @@ export default function IncomePage() {
     return '💰';
   }
 
-  // Find the label for a category id (e.g. 'salary' → 'Salary')
   function getCategoryLabel(categoryId) {
     for (let i = 0; i < INCOME_CATEGORIES.length; i++) {
       if (INCOME_CATEGORIES[i].id === categoryId) {
@@ -48,7 +49,29 @@ export default function IncomePage() {
     return categoryId;
   }
 
-  // Run when user clicks Add Income
+  // Start editing: fill the form with this item's data
+  function startEdit(item) {
+    setEditingId(item.id);
+    setAmount(item.amount);
+    setCategory(item.category);
+    setAccount(item.account);
+    setDate(item.date);
+    setNote(item.note || '');
+    setError('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Cancel edit mode and reset the form
+  function cancelEdit() {
+    setEditingId(null);
+    setAmount('');
+    setCategory('salary');
+    setAccount('bank');
+    setDate('');
+    setNote('');
+    setError('');
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     setError('');
@@ -63,9 +86,7 @@ export default function IncomePage() {
       return;
     }
 
-    // Build the new transaction object
-    const newTransaction = {
-      id: String(Date.now()),
+    const transactionData = {
       type: 'income',
       amount: Number(amount),
       category: category,
@@ -75,9 +96,16 @@ export default function IncomePage() {
       icon: getCategoryIcon(category),
     };
 
-    addTransaction(newTransaction);
+    if (editingId) {
+      // Update existing item
+      updateTransaction(editingId, transactionData);
+      setEditingId(null);
+    } else {
+      // Add new item
+      addTransaction(transactionData);
+    }
 
-    // Clear the form after adding
+    // Reset form
     setAmount('');
     setCategory('salary');
     setAccount('bank');
@@ -94,12 +122,20 @@ export default function IncomePage() {
         <p className={styles.bannerAmount}>₹{totalIncome.toLocaleString()}</p>
       </div>
 
-      {/* Add Income Form */}
+      {/* Add / Edit Income Form */}
       <div className={styles.card}>
-        <h2 className={styles.cardTitle}>Add Income</h2>
+        <div className={styles.formHeader}>
+          <h2 className={styles.cardTitle}>
+            {editingId ? 'Edit Income' : 'Add Income'}
+          </h2>
+          {editingId && (
+            <button className={styles.cancelBtn} onClick={cancelEdit}>
+              Cancel Edit
+            </button>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-
           <div className={styles.row}>
             <div className={styles.field}>
               <label>Amount (₹)</label>
@@ -168,7 +204,7 @@ export default function IncomePage() {
           {error && <p className={styles.error}>{error}</p>}
 
           <button type="submit" className={styles.submitBtn}>
-            + Add Income
+            {editingId ? 'Save Changes' : '+ Add Income'}
           </button>
         </form>
       </div>
@@ -188,14 +224,22 @@ export default function IncomePage() {
                 <span className={styles.itemIcon}>{item.icon}</span>
                 <div>
                   <p className={styles.itemCategory}>{getCategoryLabel(item.category)}</p>
-                  <p className={styles.itemMeta}>{item.date} · {item.note}</p>
+                  <p className={styles.itemMeta}>{item.date} · {item.note || 'No note'}</p>
                 </div>
               </div>
               <div className={styles.itemRight}>
                 <p className={styles.itemAmount}>+₹{item.amount.toLocaleString()}</p>
                 <button
+                  className={styles.editBtn}
+                  onClick={function() { startEdit(item); }}
+                  title="Edit"
+                >
+                  ✏️
+                </button>
+                <button
                   className={styles.deleteBtn}
                   onClick={function() { deleteTransaction(item.id); }}
+                  title="Delete"
                 >
                   🗑
                 </button>

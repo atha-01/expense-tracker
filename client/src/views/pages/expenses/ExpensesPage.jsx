@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
 import { EXPENSE_CATEGORIES, ACCOUNT_TYPES } from '../../../models/constants';
 import styles from './ExpensesPage.module.css';
 
 export default function ExpensesPage() {
-  const { transactions, addTransaction, deleteTransaction } = useExpense();
+  const { transactions, addTransaction, updateTransaction, deleteTransaction } = useExpense();
 
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('food');
@@ -12,6 +12,9 @@ export default function ExpensesPage() {
   const [date, setDate] = useState('');
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
+
+  // Editing state: holds the id of the transaction currently being edited, or null
+  const [editingId, setEditingId] = useState(null);
 
   // Filter only expense transactions from the full list
   let expenseList = [];
@@ -45,6 +48,29 @@ export default function ExpensesPage() {
     return categoryId;
   }
 
+  // Start editing: fill the form with this item's data
+  function startEdit(item) {
+    setEditingId(item.id);
+    setAmount(item.amount);
+    setCategory(item.category);
+    setAccount(item.account);
+    setDate(item.date);
+    setNote(item.note || '');
+    setError('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Cancel edit mode and reset the form
+  function cancelEdit() {
+    setEditingId(null);
+    setAmount('');
+    setCategory('food');
+    setAccount('cash');
+    setDate('');
+    setNote('');
+    setError('');
+  }
+
   function handleSubmit(e) {
     e.preventDefault();
     setError('');
@@ -59,8 +85,7 @@ export default function ExpensesPage() {
       return;
     }
 
-    const newTransaction = {
-      id: String(Date.now()),
+    const transactionData = {
       type: 'expense',
       amount: Number(amount),
       category: category,
@@ -70,8 +95,16 @@ export default function ExpensesPage() {
       icon: getCategoryIcon(category),
     };
 
-    addTransaction(newTransaction);
+    if (editingId) {
+      // Update existing item
+      updateTransaction(editingId, transactionData);
+      setEditingId(null);
+    } else {
+      // Add new item
+      addTransaction(transactionData);
+    }
 
+    // Reset form
     setAmount('');
     setCategory('food');
     setAccount('cash');
@@ -88,9 +121,18 @@ export default function ExpensesPage() {
         <p className={styles.bannerAmount}>₹{totalExpenses.toLocaleString()}</p>
       </div>
 
-      {/* Add Expense Form */}
+      {/* Add / Edit Expense Form */}
       <div className={styles.card}>
-        <h2 className={styles.cardTitle}>Add Expense</h2>
+        <div className={styles.formHeader}>
+          <h2 className={styles.cardTitle}>
+            {editingId ? 'Edit Expense' : 'Add Expense'}
+          </h2>
+          {editingId && (
+            <button className={styles.cancelBtn} onClick={cancelEdit}>
+              Cancel Edit
+            </button>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
 
@@ -162,7 +204,7 @@ export default function ExpensesPage() {
           {error && <p className={styles.error}>{error}</p>}
 
           <button type="submit" className={styles.submitBtn}>
-            + Add Expense
+            {editingId ? 'Save Changes' : '+ Add Expense'}
           </button>
         </form>
       </div>
@@ -182,14 +224,22 @@ export default function ExpensesPage() {
                 <span className={styles.itemIcon}>{item.icon}</span>
                 <div>
                   <p className={styles.itemCategory}>{getCategoryLabel(item.category)}</p>
-                  <p className={styles.itemMeta}>{item.date} · {item.note}</p>
+                  <p className={styles.itemMeta}>{item.date} · {item.note || 'No note'}</p>
                 </div>
               </div>
               <div className={styles.itemRight}>
                 <p className={styles.itemAmount}>-₹{item.amount.toLocaleString()}</p>
                 <button
+                  className={styles.editBtn}
+                  onClick={function() { startEdit(item); }}
+                  title="Edit"
+                >
+                  ✏️
+                </button>
+                <button
                   className={styles.deleteBtn}
                   onClick={function() { deleteTransaction(item.id); }}
+                  title="Delete"
                 >
                   🗑
                 </button>

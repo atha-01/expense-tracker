@@ -7,7 +7,7 @@ import ExpensesPage from '../expenses/ExpensesPage.jsx';
 import BillsPage from '../bills/BillsPage.jsx';
 import AccountsPage from '../accounts/AccountsPage.jsx';
 import BudgetPage from '../budget/BudgetPage';
-import HomePage from './HomePage.jsx';
+import HomePage from './Homepage.jsx';
 import styles from './DashboardPage.module.css';
 
 // function Placeholder({ page }) {
