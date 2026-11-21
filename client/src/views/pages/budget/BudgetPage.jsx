@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import  { useState } from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
 import { getBudgetHealth, EXPENSE_CATEGORIES } from '../../../models/constants';
 import styles from './BudgetPage.module.css';
@@ -9,16 +9,27 @@ export default function BudgetPage() {
   const [budgetInput, setBudgetInput] = useState('');
   const [error, setError] = useState('');
 
-  // Get the current month as a string like "2026-11"
-  // We use this to filter only this month's expenses
-  const today = new Date();
-  const currentMonth = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
+  // Track the active year and month (defaults to today)
+  const [activeDate, setActiveDate] = useState(new Date());
 
-  // Filter only expense transactions from the current month
+  const activeYear = activeDate.getFullYear();
+  const activeMonthNumber = activeDate.getMonth() + 1;
+  const currentMonthString = activeYear + '-' + String(activeMonthNumber).padStart(2, '0');
+
+  // Month navigation: previous and next
+  function goToPreviousMonth() {
+    setActiveDate(new Date(activeYear, activeDate.getMonth() - 1, 1));
+  }
+
+  function goToNextMonth() {
+    setActiveDate(new Date(activeYear, activeDate.getMonth() + 1, 1));
+  }
+
+  // Filter expenses strictly for the selected month
   let thisMonthExpenses = [];
   for (let i = 0; i < transactions.length; i++) {
     const transaction = transactions[i];
-    if (transaction.type === 'expense' && transaction.date.startsWith(currentMonth)) {
+    if (transaction.type === 'expense' && transaction.date && transaction.date.startsWith(currentMonthString)) {
       thisMonthExpenses.push(transaction);
     }
   }
@@ -26,7 +37,7 @@ export default function BudgetPage() {
   // Add up total spent this month
   let totalSpent = 0;
   for (let i = 0; i < thisMonthExpenses.length; i++) {
-    totalSpent = totalSpent + thisMonthExpenses[i].amount;
+    totalSpent = totalSpent + (Number(thisMonthExpenses[i].amount) || 0);
   }
 
   // How much is left in the budget
@@ -35,7 +46,7 @@ export default function BudgetPage() {
   // Get budget health status object from constants
   const health = getBudgetHealth(totalSpent, monthlyBudget);
 
-  // Calculate what percentage of budget is spent (for the main progress bar)
+  // Calculate what percentage of budget is spent (max 100% for progress bar width)
   let spentPercentage = 0;
   if (monthlyBudget > 0) {
     spentPercentage = (totalSpent / monthlyBudget) * 100;
@@ -45,7 +56,6 @@ export default function BudgetPage() {
   }
 
   // Group spending by category
-  // Result will look like: { food: 500, transport: 200, ... }
   const spendingByCategory = {};
   for (let i = 0; i < thisMonthExpenses.length; i++) {
     const transaction = thisMonthExpenses[i];
@@ -57,7 +67,7 @@ export default function BudgetPage() {
     spendingByCategory[cat] = spendingByCategory[cat] + transaction.amount;
   }
 
-  // Turn the grouped object into a sorted array (highest spending first)
+  // Turn into a sorted array (highest spending first)
   const categoryRows = [];
   for (let catId in spendingByCategory) {
     categoryRows.push({
@@ -69,7 +79,6 @@ export default function BudgetPage() {
     return b.amount - a.amount;
   });
 
-  // Find icon and label for a category id
   function getCategoryInfo(categoryId) {
     for (let i = 0; i < EXPENSE_CATEGORIES.length; i++) {
       if (EXPENSE_CATEGORIES[i].id === categoryId) {
@@ -79,22 +88,14 @@ export default function BudgetPage() {
     return { icon: '💸', label: categoryId };
   }
 
-  // Calculate what % of total spending this category takes up
   function getCategoryPercent(amount) {
-    if (totalSpent === 0) {
-      return 0;
-    }
+    if (totalSpent === 0) return 0;
     return Math.round((amount / totalSpent) * 100);
   }
 
-  // Pick the right color for the main progress bar based on health
   function getBarColor() {
-    if (health.id === 'critical') {
-      return styles.barRed;
-    }
-    if (health.id === 'warning') {
-      return styles.barAmber;
-    }
+    if (health.id === 'critical') return styles.barRed;
+    if (health.id === 'warning') return styles.barAmber;
     return styles.barGreen;
   }
 
@@ -137,14 +138,23 @@ export default function BudgetPage() {
         </form>
       </div>
 
-      {/* Budget Overview */}
+      {/* Month Navigator & Budget Overview */}
       {monthlyBudget > 0 && (
         <div className={styles.card}>
+          <div className={styles.monthNavigator}>
+            <button className={styles.navArrow} onClick={goToPreviousMonth} title="Previous Month">
+              ←
+            </button>
+            <span className={styles.monthTitle}>
+              {activeDate.toLocaleString('default', { month: 'long' }).toUpperCase()} {activeYear}
+            </span>
+            <button className={styles.navArrow} onClick={goToNextMonth} title="Next Month">
+              →
+            </button>
+          </div>
+
           <div className={styles.overviewTop}>
             <div>
-              <p className={styles.overviewMonth}>
-                {today.toLocaleString('default', { month: 'long' })} {today.getFullYear()}
-              </p>
               <p className={styles.overviewHealth}>
                 {health.emoji} {health.label}
               </p>
@@ -169,7 +179,7 @@ export default function BudgetPage() {
             </div>
           </div>
 
-          {/* Main progress bar */}
+          {/* Progress bar */}
           <div className={styles.progressTrack}>
             <div
               className={`${styles.progressBar} ${getBarColor()}`}
@@ -177,7 +187,7 @@ export default function BudgetPage() {
             />
           </div>
           <p className={styles.progressLabel}>
-            {Math.round(spentPercentage)}% of budget used
+            {Math.round((totalSpent / monthlyBudget) * 100)}% of budget used
           </p>
         </div>
       )}
@@ -185,7 +195,9 @@ export default function BudgetPage() {
       {/* Spending by Category */}
       {categoryRows.length > 0 && (
         <div className={styles.card}>
-          <h2 className={styles.cardTitle}>Spending by Category — This Month</h2>
+          <h2 className={styles.cardTitle}>
+            Spending by Category — {activeDate.toLocaleString('default', { month: 'long' })} {activeYear}
+          </h2>
 
           {categoryRows.map(function(row) {
             const catInfo = getCategoryInfo(row.id);
@@ -213,11 +225,12 @@ export default function BudgetPage() {
         </div>
       )}
 
-      {/* Empty state when no budget and no expenses */}
-      {monthlyBudget === 0 && categoryRows.length === 0 && (
+      {/* When no expenses exist for this selected month */}
+      {monthlyBudget > 0 && categoryRows.length === 0 && (
         <div className={styles.emptyCard}>
-          <p className={styles.emptyIcon}>📊</p>
-          <p className={styles.emptyText}>Set a monthly budget above to start tracking your spending health.</p>
+          <p className={styles.emptyText}>
+            No expenses logged for {activeDate.toLocaleString('default', { month: 'long' })} {activeYear}.
+          </p>
         </div>
       )}
 
