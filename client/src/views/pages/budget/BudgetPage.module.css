@@ -78,28 +78,80 @@
   font-size: 0.85rem;
 }
 
+/* Month Navigator */
+.monthNavigator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 16px;
+  margin-bottom: 20px;
+}
+
+.monthTitle {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.navArrow {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--primary);
+  padding: 4px 12px;
+  border-radius: 6px;
+  transition: background-color 0.15s;
+}
+
+.navArrow:hover {
+  background-color: var(--bg-surface-hover);
+}
+
 /* Overview section */
 .overviewTop {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   flex-wrap: wrap;
   gap: 16px;
   margin-bottom: 20px;
 }
 
-.overviewMonth {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+/* HeroUI Style Status Pill Badges */
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
-.overviewHealth {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--text-primary);
+.statusSvg {
+  width: 18px;
+  height: 18px;
+}
+
+.pillGood {
+  background-color: var(--income-bg);
+  color: var(--income-green);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.pillWarning {
+  background-color: var(--warning-bg);
+  color: var(--warning-amber);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.pillCritical {
+  background-color: var(--expense-bg);
+  color: var(--expense-red);
+  border: 1px solid rgba(239, 68, 68, 0.3);
 }
 
 .overviewNumbers {
@@ -120,45 +172,64 @@
 }
 
 .statValue {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.positive {
-  color: var(--income-green);
-}
+.positive { color: var(--income-green); }
+.negative { color: var(--expense-red); }
 
-.negative {
-  color: var(--expense-red);
-}
-
-/* Progress bar */
+/* Modern HeroUI-Style Glowing Gradient Progress Bar */
 .progressTrack {
   width: 100%;
-  height: 12px;
+  height: 14px;
   background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
   border-radius: 999px;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  padding: 2px;
 }
 
 .progressBar {
   height: 100%;
   border-radius: 999px;
-  transition: width 0.4s ease;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.barGreen { background-color: var(--income-green); }
-.barAmber { background-color: var(--warning-amber); }
-.barRed   { background-color: var(--expense-red); }
+.barGradientGreen {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+}
 
-.progressLabel {
-  font-size: 0.8rem;
+.barGradientAmber {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+
+.barGradientRed {
+  background: linear-gradient(90deg, #ef4444, #f87171);
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.4);
+}
+
+.progressMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.progressPercentage {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.progressStatusText {
   color: var(--text-secondary);
 }
 
-/* Category rows */
+/* Category Rows */
 .catRow {
   display: flex;
   align-items: center;
@@ -177,11 +248,23 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  min-width: 140px;
+  min-width: 150px;
 }
 
-.catIcon {
-  font-size: 1.3rem;
+.catIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.catSvg {
+  width: 18px;
+  height: 18px;
 }
 
 .catLabel {
@@ -228,18 +311,12 @@
   text-align: right;
 }
 
-/* Empty state */
 .emptyCard {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 48px 24px;
+  padding: 40px 24px;
   text-align: center;
-}
-
-.emptyIcon {
-  font-size: 3rem;
-  margin-bottom: 12px;
 }
 
 .emptyText {
@@ -252,48 +329,14 @@
     flex-direction: column;
     align-items: stretch;
   }
-
   .submitBtn {
     height: auto;
     width: 100%;
   }
-
   .overviewNumbers {
     gap: 16px;
   }
-
   .catTrack {
     width: 80px;
   }
-}
-
-.monthNavigator {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: var(--bg-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  padding: 8px 16px;
-  margin-bottom: 20px;
-}
-
-.monthTitle {
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--text-primary);
-}
-
-.navArrow {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: var(--primary);
-  padding: 4px 12px;
-  border-radius: 6px;
-  transition: background-color 0.15s;
-}
-
-.navArrow:hover {
-  background-color: var(--bg-surface-hover);
 }

@@ -1,6 +1,22 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
 import { getBudgetHealth, EXPENSE_CATEGORIES } from '../../../models/constants';
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  XCircleIcon,
+  CakeIcon,
+  TruckIcon,
+  HomeIcon,
+  BoltIcon,
+  HeartIcon,
+  ShoppingCartIcon,
+  FilmIcon,
+  TagIcon,
+  AcademicCapIcon,
+  ArrowPathIcon,
+  ArrowTrendingDownIcon,
+} from '@heroicons/react/24/outline';
 import styles from './BudgetPage.module.css';
 
 export default function BudgetPage() {
@@ -9,14 +25,12 @@ export default function BudgetPage() {
   const [budgetInput, setBudgetInput] = useState('');
   const [error, setError] = useState('');
 
-  // Track the active year and month (defaults to today)
   const [activeDate, setActiveDate] = useState(new Date());
 
   const activeYear = activeDate.getFullYear();
   const activeMonthNumber = activeDate.getMonth() + 1;
   const currentMonthString = activeYear + '-' + String(activeMonthNumber).padStart(2, '0');
 
-  // Month navigation: previous and next
   function goToPreviousMonth() {
     setActiveDate(new Date(activeYear, activeDate.getMonth() - 1, 1));
   }
@@ -25,7 +39,6 @@ export default function BudgetPage() {
     setActiveDate(new Date(activeYear, activeDate.getMonth() + 1, 1));
   }
 
-  // Filter expenses strictly for the selected month
   let thisMonthExpenses = [];
   for (let i = 0; i < transactions.length; i++) {
     const transaction = transactions[i];
@@ -34,28 +47,17 @@ export default function BudgetPage() {
     }
   }
 
-  // Add up total spent this month
   let totalSpent = 0;
   for (let i = 0; i < thisMonthExpenses.length; i++) {
     totalSpent = totalSpent + (Number(thisMonthExpenses[i].amount) || 0);
   }
 
-  // How much is left in the budget
   let remaining = monthlyBudget - totalSpent;
-
-  // Get budget health status object from constants
   const health = getBudgetHealth(totalSpent, monthlyBudget);
 
-  // Calculate what percentage of budget is spent (max 100% for progress bar width)
-  let spentPercentage = 0;
-  if (monthlyBudget > 0) {
-    spentPercentage = (totalSpent / monthlyBudget) * 100;
-    if (spentPercentage > 100) {
-      spentPercentage = 100;
-    }
-  }
+  let rawPercentage = monthlyBudget > 0 ? (totalSpent / monthlyBudget) * 100 : 0;
+  let spentPercentage = rawPercentage > 100 ? 100 : rawPercentage;
 
-  // Group spending by category
   const spendingByCategory = {};
   for (let i = 0; i < thisMonthExpenses.length; i++) {
     const transaction = thisMonthExpenses[i];
@@ -64,10 +66,9 @@ export default function BudgetPage() {
     if (spendingByCategory[cat] === undefined) {
       spendingByCategory[cat] = 0;
     }
-    spendingByCategory[cat] = spendingByCategory[cat] + transaction.amount;
+    spendingByCategory[cat] = spendingByCategory[cat] + Number(transaction.amount);
   }
 
-  // Turn into a sorted array (highest spending first)
   const categoryRows = [];
   for (let catId in spendingByCategory) {
     categoryRows.push({
@@ -79,13 +80,32 @@ export default function BudgetPage() {
     return b.amount - a.amount;
   });
 
-  function getCategoryInfo(categoryId) {
+  // Category Heroicon renderer
+  function renderCategoryIcon(catId) {
+    const id = catId ? catId.toLowerCase() : '';
+    let IconComp = ArrowTrendingDownIcon;
+
+    if (id === 'food') IconComp = CakeIcon;
+    else if (id === 'transport') IconComp = TruckIcon;
+    else if (id === 'rent') IconComp = HomeIcon;
+    else if (id === 'utilities') IconComp = BoltIcon;
+    else if (id === 'health') IconComp = HeartIcon;
+    else if (id === 'grocery') IconComp = ShoppingCartIcon;
+    else if (id === 'entertainment') IconComp = FilmIcon;
+    else if (id === 'clothing') IconComp = TagIcon;
+    else if (id === 'education') IconComp = AcademicCapIcon;
+    else if (id === 'subscriptions') IconComp = ArrowPathIcon;
+
+    return <IconComp className={styles.catSvg} />;
+  }
+
+  function getCategoryLabel(categoryId) {
     for (let i = 0; i < EXPENSE_CATEGORIES.length; i++) {
       if (EXPENSE_CATEGORIES[i].id === categoryId) {
-        return EXPENSE_CATEGORIES[i];
+        return EXPENSE_CATEGORIES[i].label;
       }
     }
-    return { icon: '💸', label: categoryId };
+    return categoryId || 'Expense';
   }
 
   function getCategoryPercent(amount) {
@@ -93,10 +113,10 @@ export default function BudgetPage() {
     return Math.round((amount / totalSpent) * 100);
   }
 
-  function getBarColor() {
-    if (health.id === 'critical') return styles.barRed;
-    if (health.id === 'warning') return styles.barAmber;
-    return styles.barGreen;
+  function getBarGradientClass() {
+    if (health.id === 'critical') return styles.barGradientRed;
+    if (health.id === 'warning') return styles.barGradientAmber;
+    return styles.barGradientGreen;
   }
 
   function handleSaveBudget(e) {
@@ -138,7 +158,7 @@ export default function BudgetPage() {
         </form>
       </div>
 
-      {/* Month Navigator & Budget Overview */}
+      {/* Month Navigator & HeroUI Budget Overview */}
       {monthlyBudget > 0 && (
         <div className={styles.card}>
           <div className={styles.monthNavigator}>
@@ -154,11 +174,17 @@ export default function BudgetPage() {
           </div>
 
           <div className={styles.overviewTop}>
-            <div>
-              <p className={styles.overviewHealth}>
-                {health.emoji} {health.label}
-              </p>
+            {/* Sleek HeroUI Status Pill Badge */}
+            <div className={`${styles.statusPill} ${
+              health.id === 'good' ? styles.pillGood :
+              health.id === 'warning' ? styles.pillWarning : styles.pillCritical
+            }`}>
+              {health.id === 'good' && <CheckCircleIcon className={styles.statusSvg} />}
+              {health.id === 'warning' && <ExclamationTriangleIcon className={styles.statusSvg} />}
+              {health.id === 'critical' && <XCircleIcon className={styles.statusSvg} />}
+              <span>{health.label}</span>
             </div>
+
             <div className={styles.overviewNumbers}>
               <div className={styles.overviewStat}>
                 <p className={styles.statLabel}>Spent</p>
@@ -179,16 +205,23 @@ export default function BudgetPage() {
             </div>
           </div>
 
-          {/* Progress bar */}
+          {/* Sleek HeroUI Progress Bar Track */}
           <div className={styles.progressTrack}>
             <div
-              className={`${styles.progressBar} ${getBarColor()}`}
+              className={`${styles.progressBar} ${getBarGradientClass()}`}
               style={{ width: spentPercentage + '%' }}
             />
           </div>
-          <p className={styles.progressLabel}>
-            {Math.round((totalSpent / monthlyBudget) * 100)}% of budget used
-          </p>
+
+          {/* Under Progress Bar Meta */}
+          <div className={styles.progressMeta}>
+            <span className={styles.progressPercentage}>
+              {Math.round(rawPercentage)}% used
+            </span>
+            <span className={styles.progressStatusText}>
+              {remaining >= 0 ? `₹${remaining.toLocaleString()} safe to spend` : `Exceeded by ₹${Math.abs(remaining).toLocaleString()}`}
+            </span>
+          </div>
         </div>
       )}
 
@@ -200,14 +233,15 @@ export default function BudgetPage() {
           </h2>
 
           {categoryRows.map(function(row) {
-            const catInfo = getCategoryInfo(row.id);
             const catPercent = getCategoryPercent(row.amount);
 
             return (
               <div key={row.id} className={styles.catRow}>
                 <div className={styles.catLeft}>
-                  <span className={styles.catIcon}>{catInfo.icon}</span>
-                  <span className={styles.catLabel}>{catInfo.label}</span>
+                  <div className={styles.catIconWrap}>
+                    {renderCategoryIcon(row.id)}
+                  </div>
+                  <span className={styles.catLabel}>{getCategoryLabel(row.id)}</span>
                 </div>
                 <div className={styles.catRight}>
                   <div className={styles.catTrack}>
@@ -225,7 +259,6 @@ export default function BudgetPage() {
         </div>
       )}
 
-      {/* When no expenses exist for this selected month */}
       {monthlyBudget > 0 && categoryRows.length === 0 && (
         <div className={styles.emptyCard}>
           <p className={styles.emptyText}>

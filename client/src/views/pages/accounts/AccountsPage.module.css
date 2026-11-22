@@ -12,12 +12,24 @@
   padding: 20px 24px;
 }
 
+.bannerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
 .bannerLabel {
   font-size: 0.85rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 4px;
+}
+
+.bannerIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--primary);
 }
 
 .bannerAmount {
@@ -64,8 +76,7 @@
   color: var(--text-primary);
 }
 
-.field input,
-.field select {
+.field input {
   padding: 10px 12px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -74,8 +85,7 @@
   font-size: 0.95rem;
 }
 
-.field input:focus,
-.field select:focus {
+.field input:focus {
   border-color: var(--primary);
   outline: none;
 }
@@ -99,7 +109,6 @@
   opacity: 0.85;
 }
 
-/* Accounts display as a card grid */
 .accountsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -128,25 +137,45 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.accountCard:hover {
+  border-color: var(--primary);
 }
 
 .accountTop {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 8px;
 }
 
-.accountIcon {
-  font-size: 2rem;
+.accountIconBadge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accountSvg {
+  width: 24px;
+  height: 24px;
 }
 
 .deleteBtn {
-  font-size: 1rem;
-  padding: 4px 8px;
-  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
   color: var(--text-secondary);
-  transition: background-color 0.15s;
+  transition: all 0.15s ease;
 }
 
 .deleteBtn:hover {
@@ -154,8 +183,13 @@
   color: var(--expense-red);
 }
 
+.trashSvg {
+  width: 18px;
+  height: 18px;
+}
+
 .accountName {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -166,9 +200,9 @@
 }
 
 .accountBalance {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .balancePositive {

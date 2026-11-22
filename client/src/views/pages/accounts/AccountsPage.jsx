@@ -1,7 +1,24 @@
-import { useState } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useState } from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
-import { ACCOUNT_TYPES } from '../../../models/constants';
+import IconSelect from '../../components/common/IconSelect';
+import {
+  BuildingLibraryIcon,
+  BanknotesIcon,
+  CreditCardIcon,
+  DevicePhoneMobileIcon,
+  ScaleIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import styles from './AccountsPage.module.css';
+
+// Account types paired with Heroicons
+const accountTypeOptions = [
+  { id: 'bank', label: 'Bank Account', Icon: BuildingLibraryIcon },
+  { id: 'cash', label: 'Cash',         Icon: BanknotesIcon },
+  { id: 'card', label: 'Credit Card',  Icon: CreditCardIcon },
+  { id: 'upi',  label: 'UPI / Wallet', Icon: DevicePhoneMobileIcon },
+];
 
 export default function AccountsPage() {
   const { accounts, transactions, addAccount, deleteAccount } = useExpense();
@@ -11,19 +28,18 @@ export default function AccountsPage() {
   const [openingBalance, setOpeningBalance] = useState('');
   const [error, setError] = useState('');
 
-  // Calculate the current balance of one account
-  // Formula: opening balance + all income into it - all expenses from it
+  // Calculate live balance for an account
   function getCurrentBalance(account) {
     let balance = account.openingBalance;
 
     for (let i = 0; i < transactions.length; i++) {
       const transaction = transactions[i];
 
-      if (transaction.account === account.id) {
+      if (transaction.account === account.id || transaction.account === account.type) {
         if (transaction.type === 'income') {
-          balance = balance + transaction.amount;
+          balance = balance + Number(transaction.amount);
         } else {
-          balance = balance - transaction.amount;
+          balance = balance - Number(transaction.amount);
         }
       }
     }
@@ -31,27 +47,27 @@ export default function AccountsPage() {
     return balance;
   }
 
-  // Find the icon for an account type
-  function getTypeIcon(typeId) {
-    for (let i = 0; i < ACCOUNT_TYPES.length; i++) {
-      if (ACCOUNT_TYPES[i].id === typeId) {
-        return ACCOUNT_TYPES[i].icon;
-      }
-    }
-    return '💵';
+  // Returns the Heroicon for an account type
+  function renderTypeIcon(typeId) {
+    const id = typeId ? typeId.toLowerCase() : '';
+    let IconComp = BanknotesIcon;
+
+    if (id === 'bank') IconComp = BuildingLibraryIcon;
+    else if (id === 'card') IconComp = CreditCardIcon;
+    else if (id === 'upi') IconComp = DevicePhoneMobileIcon;
+
+    return (
+      <div className={styles.accountIconBadge}>
+        <IconComp className={styles.accountSvg} />
+      </div>
+    );
   }
 
-  // Find the label for an account type
   function getTypeLabel(typeId) {
-    for (let i = 0; i < ACCOUNT_TYPES.length; i++) {
-      if (ACCOUNT_TYPES[i].id === typeId) {
-        return ACCOUNT_TYPES[i].label;
-      }
-    }
-    return typeId;
+    const found = accountTypeOptions.find(function(opt) { return opt.id === typeId; });
+    return found ? found.label : typeId;
   }
 
-  // Calculate total balance across all accounts
   function getTotalBalance() {
     let total = 0;
     for (let i = 0; i < accounts.length; i++) {
@@ -74,7 +90,6 @@ export default function AccountsPage() {
       return;
     }
 
-    // Use timestamp + type to make a unique id for matching transactions
     const newAccount = {
       id: type + '_' + String(Date.now()),
       name: name,
@@ -94,9 +109,12 @@ export default function AccountsPage() {
   return (
     <div className={styles.page}>
 
-      {/* Total balance across all accounts */}
+      {/* Net Worth Banner */}
       <div className={styles.banner}>
-        <p className={styles.bannerLabel}>Net Worth Across All Accounts</p>
+        <div className={styles.bannerHeader}>
+          <p className={styles.bannerLabel}>Net Worth Across All Accounts</p>
+          <ScaleIcon className={styles.bannerIcon} />
+        </div>
         <p className={styles.bannerAmount}>₹{totalBalance.toLocaleString()}</p>
       </div>
 
@@ -105,7 +123,6 @@ export default function AccountsPage() {
         <h2 className={styles.cardTitle}>Add Account</h2>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-
           <div className={styles.row}>
             <div className={styles.field}>
               <label>Account Name</label>
@@ -117,21 +134,13 @@ export default function AccountsPage() {
               />
             </div>
 
-            <div className={styles.field}>
-              <label>Account Type</label>
-              <select
-                value={type}
-                onChange={function(e) { setType(e.target.value); }}
-              >
-                {ACCOUNT_TYPES.map(function(acc) {
-                  return (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.icon} {acc.label}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+            {/* Custom Heroicon Account Dropdown */}
+            <IconSelect
+              label="Account Type"
+              options={accountTypeOptions}
+              value={type}
+              onChange={setType}
+            />
           </div>
 
           <div className={styles.field}>
@@ -152,9 +161,8 @@ export default function AccountsPage() {
         </form>
       </div>
 
-      {/* Accounts List */}
+      {/* Accounts Grid */}
       <div className={styles.accountsGrid}>
-
         {accounts.length === 0 && (
           <div className={styles.emptyCard}>
             <p className={styles.empty}>No accounts yet. Add one above!</p>
@@ -163,7 +171,6 @@ export default function AccountsPage() {
 
         {accounts.map(function(account) {
           const currentBalance = getCurrentBalance(account);
-          const typeIcon = getTypeIcon(account.type);
           const typeLabel = getTypeLabel(account.type);
 
           let balanceClass = styles.balancePositive;
@@ -173,14 +180,14 @@ export default function AccountsPage() {
 
           return (
             <div key={account.id} className={styles.accountCard}>
-
               <div className={styles.accountTop}>
-                <div className={styles.accountIcon}>{typeIcon}</div>
+                {renderTypeIcon(account.type)}
                 <button
                   className={styles.deleteBtn}
                   onClick={function() { deleteAccount(account.id); }}
+                  title="Delete Account"
                 >
-                  🗑
+                  <TrashIcon className={styles.trashSvg} />
                 </button>
               </div>
 
@@ -194,11 +201,9 @@ export default function AccountsPage() {
               <p className={styles.openingNote}>
                 Opening: ₹{account.openingBalance.toLocaleString()}
               </p>
-
             </div>
           );
         })}
-
       </div>
 
     </div>

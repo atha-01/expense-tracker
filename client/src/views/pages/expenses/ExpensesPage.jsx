@@ -1,7 +1,51 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
-import { EXPENSE_CATEGORIES, ACCOUNT_TYPES } from '../../../models/constants';
+import { EXPENSE_CATEGORIES } from '../../../models/constants';
+import IconSelect from '../../components/common/IconSelect';
+import {
+  CakeIcon,
+  TruckIcon,
+  HomeIcon,
+  BoltIcon,
+  HeartIcon,
+  ShoppingCartIcon,
+  FilmIcon,
+  TagIcon,
+  AcademicCapIcon,
+  ArrowPathIcon,
+  ArrowTrendingDownIcon,
+  BuildingLibraryIcon,
+  BanknotesIcon,
+  CreditCardIcon,
+  DevicePhoneMobileIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import styles from './ExpensesPage.module.css';
+
+// Category options paired with Heroicons
+const expenseCategoryOptions = [
+  { id: 'food',          label: 'Food & Dining',    Icon: CakeIcon },
+  { id: 'transport',     label: 'Transport',        Icon: TruckIcon },
+  { id: 'rent',          label: 'Rent & Housing',   Icon: HomeIcon },
+  { id: 'utilities',     label: 'Utilities',        Icon: BoltIcon },
+  { id: 'health',        label: 'Health',           Icon: HeartIcon },
+  { id: 'grocery',       label: 'Grocery',          Icon: ShoppingCartIcon },
+  { id: 'entertainment', label: 'Entertainment',    Icon: FilmIcon },
+  { id: 'clothing',      label: 'Clothing',         Icon: TagIcon },
+  { id: 'education',     label: 'Education',        Icon: AcademicCapIcon },
+  { id: 'subscriptions', label: 'Subscriptions',    Icon: ArrowPathIcon },
+  { id: 'other',         label: 'Other',            Icon: ArrowTrendingDownIcon },
+];
+
+// Account options paired with Heroicons
+const accountOptions = [
+  { id: 'cash', label: 'Cash',         Icon: BanknotesIcon },
+  { id: 'bank', label: 'Bank Account', Icon: BuildingLibraryIcon },
+  { id: 'card', label: 'Credit Card',  Icon: CreditCardIcon },
+  { id: 'upi',  label: 'UPI / Wallet', Icon: DevicePhoneMobileIcon },
+];
 
 export default function ExpensesPage() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction } = useExpense();
@@ -13,10 +57,9 @@ export default function ExpensesPage() {
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
 
-  // Editing state: holds the id of the transaction currently being edited, or null
   const [editingId, setEditingId] = useState(null);
 
-  // Filter only expense transactions from the full list
+  // Filter only expense transactions
   let expenseList = [];
   for (let i = 0; i < transactions.length; i++) {
     if (transactions[i].type === 'expense') {
@@ -27,16 +70,55 @@ export default function ExpensesPage() {
   // Calculate total expenses
   let totalExpenses = 0;
   for (let i = 0; i < expenseList.length; i++) {
-    totalExpenses = totalExpenses + expenseList[i].amount;
+    totalExpenses = totalExpenses + (Number(expenseList[i].amount) || 0);
   }
 
-  function getCategoryIcon(categoryId) {
-    for (let i = 0; i < EXPENSE_CATEGORIES.length; i++) {
-      if (EXPENSE_CATEGORIES[i].id === categoryId) {
-        return EXPENSE_CATEGORIES[i].icon;
-      }
+  // Returns the category Heroicon inside a red badge
+  function renderCategoryIcon(catId) {
+    const id = catId ? catId.toLowerCase() : '';
+    let IconComp = ArrowTrendingDownIcon;
+
+    if (id === 'food') IconComp = CakeIcon;
+    else if (id === 'transport') IconComp = TruckIcon;
+    else if (id === 'rent') IconComp = HomeIcon;
+    else if (id === 'utilities') IconComp = BoltIcon;
+    else if (id === 'health') IconComp = HeartIcon;
+    else if (id === 'grocery') IconComp = ShoppingCartIcon;
+    else if (id === 'entertainment') IconComp = FilmIcon;
+    else if (id === 'clothing') IconComp = TagIcon;
+    else if (id === 'education') IconComp = AcademicCapIcon;
+    else if (id === 'subscriptions') IconComp = ArrowPathIcon;
+
+    return (
+      <div className={styles.categoryBadge}>
+        <IconComp className={styles.badgeSvg} />
+      </div>
+    );
+  }
+
+  // Returns the account pill badge
+  function renderAccountBadge(accountId) {
+    const id = accountId ? accountId.toLowerCase() : '';
+    let IconComp = BanknotesIcon;
+    let label = 'Cash';
+
+    if (id === 'bank') {
+      IconComp = BuildingLibraryIcon;
+      label = 'Bank';
+    } else if (id === 'card') {
+      IconComp = CreditCardIcon;
+      label = 'Card';
+    } else if (id === 'upi') {
+      IconComp = DevicePhoneMobileIcon;
+      label = 'UPI';
     }
-    return '💸';
+
+    return (
+      <span className={styles.accountPill}>
+        <IconComp className={styles.pillSvg} />
+        {label}
+      </span>
+    );
   }
 
   function getCategoryLabel(categoryId) {
@@ -45,22 +127,20 @@ export default function ExpensesPage() {
         return EXPENSE_CATEGORIES[i].label;
       }
     }
-    return categoryId;
+    return categoryId || 'Expense';
   }
 
-  // Start editing: fill the form with this item's data
   function startEdit(item) {
     setEditingId(item.id);
     setAmount(item.amount);
     setCategory(item.category);
-    setAccount(item.account);
+    setAccount(item.account || 'cash');
     setDate(item.date);
     setNote(item.note || '');
     setError('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Cancel edit mode and reset the form
   function cancelEdit() {
     setEditingId(null);
     setAmount('');
@@ -92,19 +172,15 @@ export default function ExpensesPage() {
       account: account,
       date: date,
       note: note,
-      icon: getCategoryIcon(category),
     };
 
     if (editingId) {
-      // Update existing item
       updateTransaction(editingId, transactionData);
       setEditingId(null);
     } else {
-      // Add new item
       addTransaction(transactionData);
     }
 
-    // Reset form
     setAmount('');
     setCategory('food');
     setAccount('cash');
@@ -115,13 +191,16 @@ export default function ExpensesPage() {
   return (
     <div className={styles.page}>
 
-      {/* Total expenses banner */}
+      {/* Banner */}
       <div className={styles.banner}>
-        <p className={styles.bannerLabel}>Total Expenses</p>
+        <div className={styles.bannerHeader}>
+          <p className={styles.bannerLabel}>Total Expenses</p>
+          <ArrowTrendingDownIcon className={styles.bannerIcon} />
+        </div>
         <p className={styles.bannerAmount}>₹{totalExpenses.toLocaleString()}</p>
       </div>
 
-      {/* Add / Edit Expense Form */}
+      {/* Add / Edit Form */}
       <div className={styles.card}>
         <div className={styles.formHeader}>
           <h2 className={styles.cardTitle}>
@@ -135,7 +214,6 @@ export default function ExpensesPage() {
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
-
           <div className={styles.row}>
             <div className={styles.field}>
               <label>Amount (₹)</label>
@@ -157,38 +235,21 @@ export default function ExpensesPage() {
             </div>
           </div>
 
+          {/* Custom Heroicon Dropdowns */}
           <div className={styles.row}>
-            <div className={styles.field}>
-              <label>Category</label>
-              <select
-                value={category}
-                onChange={function(e) { setCategory(e.target.value); }}
-              >
-                {EXPENSE_CATEGORIES.map(function(cat) {
-                  return (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.icon} {cat.label}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+            <IconSelect
+              label="Category"
+              options={expenseCategoryOptions}
+              value={category}
+              onChange={setCategory}
+            />
 
-            <div className={styles.field}>
-              <label>Account</label>
-              <select
-                value={account}
-                onChange={function(e) { setAccount(e.target.value); }}
-              >
-                {ACCOUNT_TYPES.map(function(acc) {
-                  return (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.icon} {acc.label}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+            <IconSelect
+              label="Account"
+              options={accountOptions}
+              value={account}
+              onChange={setAccount}
+            />
           </div>
 
           <div className={styles.field}>
@@ -209,7 +270,7 @@ export default function ExpensesPage() {
         </form>
       </div>
 
-      {/* Expense List */}
+      {/* Expense History List */}
       <div className={styles.card}>
         <h2 className={styles.cardTitle}>All Expenses ({expenseList.length})</h2>
 
@@ -221,27 +282,33 @@ export default function ExpensesPage() {
           return (
             <div key={item.id} className={styles.listRow}>
               <div className={styles.itemLeft}>
-                <span className={styles.itemIcon}>{item.icon}</span>
+                {renderCategoryIcon(item.category)}
                 <div>
-                  <p className={styles.itemCategory}>{getCategoryLabel(item.category)}</p>
-                  <p className={styles.itemMeta}>{item.date} · {item.note || 'No note'}</p>
+                  <div className={styles.titleRow}>
+                    <p className={styles.itemCategory}>{getCategoryLabel(item.category)}</p>
+                    {renderAccountBadge(item.account)}
+                  </div>
+                  <p className={styles.itemMeta}>
+                    {item.date} {item.note && `· ${item.note}`}
+                  </p>
                 </div>
               </div>
+
               <div className={styles.itemRight}>
-                <p className={styles.itemAmount}>-₹{item.amount.toLocaleString()}</p>
+                <p className={styles.itemAmount}>-₹{Number(item.amount).toLocaleString()}</p>
                 <button
-                  className={styles.editBtn}
+                  className={styles.actionBtn}
                   onClick={function() { startEdit(item); }}
                   title="Edit"
                 >
-                  ✏️
+                  <PencilSquareIcon className={styles.actionSvg} />
                 </button>
                 <button
-                  className={styles.deleteBtn}
+                  className={`${styles.actionBtn} ${styles.deleteHover}`}
                   onClick={function() { deleteTransaction(item.id); }}
                   title="Delete"
                 >
-                  🗑
+                  <TrashIcon className={styles.actionSvg} />
                 </button>
               </div>
             </div>
