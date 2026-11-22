@@ -1,5 +1,8 @@
 /* eslint-disable no-unused-vars */
 // import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useExpense } from '../../../controllers/ExpenseContext';
+import { getBudgetHealth } from '../../../models/constants';
 import {
   WalletIcon,
   ArrowTrendingUpIcon,
@@ -18,20 +21,38 @@ import {
   BriefcaseIcon,
   TruckIcon,
   CakeIcon,
+  ChevronDownIcon,
+  CheckIcon,
 } from '@heroicons/react/24/outline';
-import { useExpense } from '../../../controllers/ExpenseContext';
-import { getBudgetHealth } from '../../../models/constants';
 import styles from './HomePage.module.css';
 
 export default function HomePage() {
   const { transactions, monthlyBudget } = useExpense();
 
-  // Filter out any corrupted items that don't have amount or type
+  // Filter state for the table header: 'all' | 'income' | 'expense'
+  const [filterType, setFilterType] = useState('all');
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const filterRef = useRef(null);
+
+  // Close filter dropdown when clicking outside
+  useEffect(function() {
+    function handleClickOutside(event) {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setIsFilterOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return function() {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  // Filter valid transactions
   const validTransactions = transactions.filter(function(item) {
     return item && item.amount !== undefined && item.type !== undefined;
   });
 
-  // Step 1: Calculate total income safely
+  // Calculate totals
   let totalIncome = 0;
   for (let i = 0; i < validTransactions.length; i++) {
     if (validTransactions[i].type === 'income') {
@@ -39,7 +60,6 @@ export default function HomePage() {
     }
   }
 
-  // Step 2: Calculate total expenses safely
   let totalExpenses = 0;
   for (let i = 0; i < validTransactions.length; i++) {
     if (validTransactions[i].type === 'expense') {
@@ -47,22 +67,22 @@ export default function HomePage() {
     }
   }
 
-  // Step 3: Balance = what came in minus what went out
   let balance = totalIncome - totalExpenses;
-
-  // Step 4: Get budget health (Good / At Risk / Exceeded)
   let health = getBudgetHealth(totalExpenses, monthlyBudget);
 
-  // Step 5: Get the 5 most recent valid transactions
-  let recentTransactions = validTransactions.slice(0, 5);
+  // Apply the selected filter from the table column header
+  let filteredTransactions = validTransactions.filter(function(item) {
+    if (filterType === 'all') return true;
+    return item.type === filterType;
+  });
 
+  // Show up to 8 most recent transactions in the table
+  let displayTransactions = filteredTransactions.slice(0, 8);
 
-      // Returns a styled Heroicon based on the transaction category and type
   function getTransactionIcon(item) {
     const isIncome = item.type === 'income';
     const cat = item.category ? item.category.toLowerCase() : '';
 
-    // Pick the icon component based on category
     let IconComponent = isIncome ? ArrowTrendingUpIcon : ArrowTrendingDownIcon;
 
     if (cat === 'food') IconComponent = CakeIcon;
@@ -77,7 +97,6 @@ export default function HomePage() {
     else if (cat === 'subscriptions') IconComponent = ArrowPathIcon;
     else if (cat === 'salary') IconComponent = BriefcaseIcon;
 
-    // Badge color: green background for income, red for expense
     const badgeClass = isIncome ? styles.badgeIncome : styles.badgeExpense;
 
     return (
@@ -87,15 +106,16 @@ export default function HomePage() {
     );
   }
 
-
-
+  function handleFilterSelect(type) {
+    setFilterType(type);
+    setIsFilterOpen(false);
+  }
 
   return (
     <div className={styles.page}>
 
       {/* Summary Cards */}
       <div className={styles.cards}>
-
         <div className={styles.card}>
           <div className={styles.cardHeader}>
             <p className={styles.cardLabel}>Total Balance</p>
@@ -134,38 +154,109 @@ export default function HomePage() {
             </p>
           )}
         </div>
-
       </div>
 
-      {/* Recent Transactions */}
+      {/* 3-Column Transactions Table */}
       <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>Recent Transactions</h2>
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                {/* Column 1: Filter Dropdown in the header */}
+                <th className={styles.thTransaction}>
+                  <div className={styles.filterWrapper} ref={filterRef}>
+                    <button
+                      type="button"
+                      className={styles.filterTrigger}
+                      onClick={function() { setIsFilterOpen(!isFilterOpen); }}
+                    >
+                      <span>
+                        {filterType === 'all' && 'All Transactions'}
+                        {filterType === 'income' && 'Income Only'}
+                        {filterType === 'expense' && 'Expenses Only'}
+                      </span>
+                      <ChevronDownIcon className={`${styles.chevron} ${isFilterOpen ? styles.chevronOpen : ''}`} />
+                    </button>
 
-        {recentTransactions.length === 0 && (
-          <p className={styles.empty}>No transactions yet. Add your first one!</p>
-        )}
+                    {isFilterOpen && (
+                      <div className={styles.filterMenu}>
+                        <div
+                          className={`${styles.filterItem} ${filterType === 'all' ? styles.filterActive : ''}`}
+                          onClick={function() { handleFilterSelect('all'); }}
+                        >
+                          <span>All Transactions</span>
+                          {filterType === 'all' && <CheckIcon className={styles.checkSvg} />}
+                        </div>
+                        <div
+                          className={`${styles.filterItem} ${filterType === 'income' ? styles.filterActive : ''}`}
+                          onClick={function() { handleFilterSelect('income'); }}
+                        >
+                          <span>Income Only</span>
+                          {filterType === 'income' && <CheckIcon className={styles.checkSvg} />}
+                        </div>
+                        <div
+                          className={`${styles.filterItem} ${filterType === 'expense' ? styles.filterActive : ''}`}
+                          onClick={function() { handleFilterSelect('expense'); }}
+                        >
+                          <span>Expenses Only</span>
+                          {filterType === 'expense' && <CheckIcon className={styles.checkSvg} />}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </th>
 
-        {recentTransactions.map(function(item, index) {
-          let isIncome = item.type === 'income';
-          let amountClass = isIncome ? styles.amountIncome : styles.amountExpense;
-          let amountValue = Number(item.amount) || 0;
-          let amountText = isIncome ? '+₹' + amountValue.toLocaleString() : '-₹' + amountValue.toLocaleString();
+                {/* Column 2: Date */}
+                <th className={styles.thDate}>Date</th>
 
-          return (
-            <div key={item.id || item._id || index} className={styles.txRow}>
-              <div className= {styles.txLeft}>
-                {/* <span className={styles.txIcon}>{item.icon || '💸'}</span> */}
-                {/* using (Heroicons): */}
-                        {getTransactionIcon(item)}
-                <div>
-                  <p className={styles.txNote}>{item.note || item.category || 'Transaction'}</p>
-                  <p className={styles.txDate}>{item.date || 'No date'}</p>
-                </div>
-              </div>
-              <p className={amountClass}>{amountText}</p>
-            </div>
-          );
-          })}
+                {/* Column 3: Amount */}
+                <th className={styles.thAmount}>Amount</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {displayTransactions.length === 0 ? (
+                <tr>
+                  <td colSpan="3" className={styles.emptyTd}>
+                    No transactions found for this filter.
+                  </td>
+                </tr>
+              ) : (
+                displayTransactions.map(function(item, index) {
+                  const isIncome = item.type === 'income';
+                  const amountClass = isIncome ? styles.amountIncome : styles.amountExpense;
+                  const amountValue = Number(item.amount) || 0;
+                  const amountText = isIncome ? `+₹${amountValue.toLocaleString()}` : `-₹${amountValue.toLocaleString()}`;
+
+                  return (
+                    <tr key={item.id || item._id || index} className={styles.tableRow}>
+                      {/* Left: Icon + Category/Note */}
+                      <td className={styles.tdTransaction}>
+                        <div className={styles.itemMetaLeft}>
+                          {getTransactionIcon(item)}
+                          <div>
+                            <p className={styles.itemTitle}>{item.note || item.category || 'Transaction'}</p>
+                            <p className={styles.itemCategorySub}>{item.category}</p>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Center: Date */}
+                      <td className={styles.tdDate}>
+                        <span className={styles.dateText}>{item.date || '—'}</span>
+                      </td>
+
+                      {/* Right: Amount */}
+                      <td className={styles.tdAmount}>
+                        <span className={amountClass}>{amountText}</span>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>
