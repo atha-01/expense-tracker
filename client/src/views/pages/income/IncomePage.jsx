@@ -1,12 +1,43 @@
-import { useState } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useState } from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
 import { INCOME_CATEGORIES, ACCOUNT_TYPES } from '../../../models/constants';
+import IconSelect from '../../components/common/IconSelect';  
+import {
+  BriefcaseIcon,
+  ComputerDesktopIcon,
+  BuildingOffice2Icon,
+  ChartBarSquareIcon,
+  GiftIcon,
+  ArrowTrendingUpIcon,
+  BuildingLibraryIcon,
+  BanknotesIcon,
+  CreditCardIcon,
+  DevicePhoneMobileIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import styles from './IncomePage.module.css';
+
+const incomeCategoryOptions = [
+  { id: 'salary',     label: 'Salary',     Icon: BriefcaseIcon },
+  { id: 'freelance',  label: 'Freelance',  Icon: ComputerDesktopIcon },
+  { id: 'business',   label: 'Business',   Icon: BuildingOffice2Icon },
+  { id: 'investment', label: 'Investment', Icon: ChartBarSquareIcon },
+  { id: 'gift',       label: 'Gift',       Icon: GiftIcon },
+  { id: 'other',      label: 'Other',      Icon: ArrowTrendingUpIcon },
+];
+
+const accountOptions = [
+  { id: 'bank', label: 'Bank Account', Icon: BuildingLibraryIcon },
+  { id: 'cash', label: 'Cash',         Icon: BanknotesIcon },
+  { id: 'card', label: 'Credit Card',  Icon: CreditCardIcon },
+  { id: 'upi',  label: 'UPI / Wallet', Icon: DevicePhoneMobileIcon },
+];
 
 export default function IncomePage() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction } = useExpense();
 
-  // Form field values
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('salary');
   const [account, setAccount] = useState('bank');
@@ -14,7 +45,6 @@ export default function IncomePage() {
   const [note, setNote] = useState('');
   const [error, setError] = useState('');
 
-  // Editing state: holds the id of the transaction currently being edited, or null
   const [editingId, setEditingId] = useState(null);
 
   // Filter only income transactions
@@ -28,16 +58,50 @@ export default function IncomePage() {
   // Calculate total income
   let totalIncome = 0;
   for (let i = 0; i < incomeList.length; i++) {
-    totalIncome = totalIncome + incomeList[i].amount;
+    totalIncome = totalIncome + (Number(incomeList[i].amount) || 0);
   }
 
-  function getCategoryIcon(categoryId) {
-    for (let i = 0; i < INCOME_CATEGORIES.length; i++) {
-      if (INCOME_CATEGORIES[i].id === categoryId) {
-        return INCOME_CATEGORIES[i].icon;
-      }
+  // Returns the right Heroicon for a category
+  function renderCategoryIcon(catId) {
+    const id = catId ? catId.toLowerCase() : '';
+    let IconComp = ArrowTrendingUpIcon;
+
+    if (id === 'salary') IconComp = BriefcaseIcon;
+    else if (id === 'freelance') IconComp = ComputerDesktopIcon;
+    else if (id === 'business') IconComp = BuildingOffice2Icon;
+    else if (id === 'investment') IconComp = ChartBarSquareIcon;
+    else if (id === 'gift') IconComp = GiftIcon;
+
+    return (
+      <div className={styles.categoryBadge}>
+        <IconComp className={styles.badgeSvg} />
+      </div>
+    );
+  }
+
+  // Returns the right Heroicon and label for an account
+  function renderAccountBadge(accountId) {
+    const id = accountId ? accountId.toLowerCase() : '';
+    let IconComp = BuildingLibraryIcon;
+    let label = 'Bank';
+
+    if (id === 'cash') {
+      IconComp = BanknotesIcon;
+      label = 'Cash';
+    } else if (id === 'card') {
+      IconComp = CreditCardIcon;
+      label = 'Card';
+    } else if (id === 'upi') {
+      IconComp = DevicePhoneMobileIcon;
+      label = 'UPI';
     }
-    return '💰';
+
+    return (
+      <span className={styles.accountPill}>
+        <IconComp className={styles.pillSvg} />
+        {label}
+      </span>
+    );
   }
 
   function getCategoryLabel(categoryId) {
@@ -46,22 +110,20 @@ export default function IncomePage() {
         return INCOME_CATEGORIES[i].label;
       }
     }
-    return categoryId;
+    return categoryId || 'Income';
   }
 
-  // Start editing: fill the form with this item's data
   function startEdit(item) {
     setEditingId(item.id);
     setAmount(item.amount);
     setCategory(item.category);
-    setAccount(item.account);
+    setAccount(item.account || 'bank');
     setDate(item.date);
     setNote(item.note || '');
     setError('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Cancel edit mode and reset the form
   function cancelEdit() {
     setEditingId(null);
     setAmount('');
@@ -93,19 +155,15 @@ export default function IncomePage() {
       account: account,
       date: date,
       note: note,
-      icon: getCategoryIcon(category),
     };
 
     if (editingId) {
-      // Update existing item
       updateTransaction(editingId, transactionData);
       setEditingId(null);
     } else {
-      // Add new item
       addTransaction(transactionData);
     }
 
-    // Reset form
     setAmount('');
     setCategory('salary');
     setAccount('bank');
@@ -116,13 +174,16 @@ export default function IncomePage() {
   return (
     <div className={styles.page}>
 
-      {/* Total income banner */}
+      {/* Banner */}
       <div className={styles.banner}>
-        <p className={styles.bannerLabel}>Total Income</p>
+        <div className={styles.bannerHeader}>
+          <p className={styles.bannerLabel}>Total Income</p>
+          <ArrowTrendingUpIcon className={styles.bannerIcon} />
+        </div>
         <p className={styles.bannerAmount}>₹{totalIncome.toLocaleString()}</p>
       </div>
 
-      {/* Add / Edit Income Form */}
+      {/* Add / Edit Form */}
       <div className={styles.card}>
         <div className={styles.formHeader}>
           <h2 className={styles.cardTitle}>
@@ -157,39 +218,21 @@ export default function IncomePage() {
             </div>
           </div>
 
-          <div className={styles.row}>
-            <div className={styles.field}>
-              <label>Category</label>
-              <select
-                value={category}
-                onChange={function(e) { setCategory(e.target.value); }}
-              >
-                {INCOME_CATEGORIES.map(function(cat) {
-                  return (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.icon} {cat.label}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+              <div className={styles.row}>
+                <IconSelect
+                  label="Category"
+                  options={incomeCategoryOptions}
+                  value={category}
+                  onChange={setCategory}
+                />
 
-            <div className={styles.field}>
-              <label>Account</label>
-              <select
-                value={account}
-                onChange={function(e) { setAccount(e.target.value); }}
-              >
-                {ACCOUNT_TYPES.map(function(acc) {
-                  return (
-                    <option key={acc.id} value={acc.id}>
-                      {acc.icon} {acc.label}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-          </div>
+                <IconSelect
+                  label="Account"
+                  options={accountOptions}
+                  value={account}
+                  onChange={setAccount}
+                />
+              </div>
 
           <div className={styles.field}>
             <label>Note (optional)</label>
@@ -209,39 +252,45 @@ export default function IncomePage() {
         </form>
       </div>
 
-      {/* Income List */}
+      {/* Income History List */}
       <div className={styles.card}>
-        <h2 className={styles.cardTitle}>All Income ({incomeList.length})</h2>
+        <h2 className={styles.cardTitle}>Income History ({incomeList.length})</h2>
 
         {incomeList.length === 0 && (
-          <p className={styles.empty}>No income added yet.</p>
+          <p className={styles.empty}>No income recorded yet.</p>
         )}
 
         {incomeList.map(function(item) {
           return (
             <div key={item.id} className={styles.row2}>
               <div className={styles.itemLeft}>
-                <span className={styles.itemIcon}>{item.icon}</span>
+                {renderCategoryIcon(item.category)}
                 <div>
-                  <p className={styles.itemCategory}>{getCategoryLabel(item.category)}</p>
-                  <p className={styles.itemMeta}>{item.date} · {item.note || 'No note'}</p>
+                  <div className={styles.titleRow}>
+                    <p className={styles.itemCategory}>{getCategoryLabel(item.category)}</p>
+                    {renderAccountBadge(item.account)}
+                  </div>
+                  <p className={styles.itemMeta}>
+                    {item.date} {item.note && `· ${item.note}`}
+                  </p>
                 </div>
               </div>
+
               <div className={styles.itemRight}>
-                <p className={styles.itemAmount}>+₹{item.amount.toLocaleString()}</p>
+                <p className={styles.itemAmount}>+₹{Number(item.amount).toLocaleString()}</p>
                 <button
-                  className={styles.editBtn}
+                  className={styles.actionBtn}
                   onClick={function() { startEdit(item); }}
                   title="Edit"
                 >
-                  ✏️
+                  <PencilSquareIcon className={styles.actionSvg} />
                 </button>
                 <button
-                  className={styles.deleteBtn}
+                  className={`${styles.actionBtn} ${styles.deleteHover}`}
                   onClick={function() { deleteTransaction(item.id); }}
                   title="Delete"
                 >
-                  🗑
+                  <TrashIcon className={styles.actionSvg} />
                 </button>
               </div>
             </div>
