@@ -1,8 +1,8 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
+// import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTheme } from '../../../controllers/ThemeContext';
 import { useAuth } from '../../../controllers/AuthContext';
+import { Bars3Icon, SunIcon, MoonIcon } from '@heroicons/react/24/outline';
 import styles from './Header.module.css';
 
 const pageTitles = {
@@ -22,22 +22,29 @@ export default function Header({ onMenuOpen }) {
   const currentPage = location.pathname.split('/').pop();
   const title = pageTitles[currentPage] || 'Dashboard';
 
-  // Safely get user initial and name (won't crash if user or user.name is missing)
   const userInitial = user && user.name ? user.name.charAt(0).toUpperCase() : '?';
   const userName = user && user.name ? user.name : 'User';
 
   return (
     <header className={styles.header}>
       <div className={styles.left}>
-        <button className={styles.hamburger} onClick={onMenuOpen}>
-          ☰
+        <button className={styles.hamburger} onClick={onMenuOpen} title="Open Menu">
+          <Bars3Icon className={styles.headerIcon} />
         </button>
         <h1 className={styles.title}>{title}</h1>
       </div>
 
       <div className={styles.right}>
-        <button className={styles.themeBtn} onClick={toggleTheme}>
-          {theme === 'light' ? '🌙' : '☀️'}
+        <button
+          className={styles.themeBtn}
+          onClick={toggleTheme}
+          title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
+        >
+          {theme === 'light' ? (
+            <MoonIcon className={styles.headerIcon} />
+          ) : (
+            <SunIcon className={styles.headerIcon} />
+          )}
         </button>
 
         {user && (

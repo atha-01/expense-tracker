@@ -1,15 +1,27 @@
 import  { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../controllers/AuthContext';
+import {
+  HomeIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
+  DocumentTextIcon,
+  BuildingLibraryIcon,
+  ChartBarSquareIcon,
+  ArrowRightOnRectangleIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  WalletIcon,
+} from '@heroicons/react/24/outline';
 import styles from './Sidebar.module.css';
 
 const navItems = [
-  { path: '/dashboard/home',     label: 'Dashboard',  icon: '🏠' },
-  { path: '/dashboard/income',   label: 'Income',     icon: '💰' },
-  { path: '/dashboard/expenses', label: 'Expenses',   icon: '💸' },
-  { path: '/dashboard/bills',    label: 'Bills',      icon: '🧾' },
-  { path: '/dashboard/accounts', label: 'Accounts',   icon: '🏦' },
-  { path: '/dashboard/budget',   label: 'Budget',     icon: '📊' },
+  { path: '/dashboard/home',     label: 'Dashboard', Icon: HomeIcon },
+  { path: '/dashboard/income',   label: 'Income',    Icon: ArrowTrendingUpIcon },
+  { path: '/dashboard/expenses', label: 'Expenses',  Icon: ArrowTrendingDownIcon },
+  { path: '/dashboard/bills',    label: 'Bills',     Icon: DocumentTextIcon },
+  { path: '/dashboard/accounts', label: 'Accounts',  Icon: BuildingLibraryIcon },
+  { path: '/dashboard/budget',   label: 'Budget',    Icon: ChartBarSquareIcon },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -22,14 +34,12 @@ export default function Sidebar({ isOpen, onClose }) {
     navigate('/login');
   }
 
-  // When a nav link is clicked on mobile, close the drawer
   function handleNavClick() {
     if (onClose) {
       onClose();
     }
   }
 
-  // Build the sidebar class — add 'open' class on mobile when isOpen is true
   let sidebarClass = styles.sidebar;
   if (collapsed) {
     sidebarClass = sidebarClass + ' ' + styles.collapsed;
@@ -42,15 +52,21 @@ export default function Sidebar({ isOpen, onClose }) {
     <aside className={sidebarClass}>
       <div className={styles.top}>
         <div className={styles.logo}>
-          {collapsed ? '💰' : '💰 SpendWise'}
+          <WalletIcon className={styles.logoIcon} />
+          {!collapsed && <span className={styles.logoText}>SpendWise</span>}
         </div>
-        <button className={styles.collapseBtn} onClick={() => setCollapsed(!collapsed)}>
-          {collapsed ? '→' : '←'}
+        <button
+          className={styles.collapseBtn}
+          onClick={() => setCollapsed(!collapsed)}
+          title={collapsed ? 'Expand' : 'Collapse'}
+        >
+          {collapsed ? <ChevronRightIcon className={styles.btnIcon} /> : <ChevronLeftIcon className={styles.btnIcon} />}
         </button>
       </div>
 
       <nav className={styles.nav}>
         {navItems.map(function(item) {
+          const ItemIcon = item.Icon;
           return (
             <NavLink
               key={item.path}
@@ -63,15 +79,15 @@ export default function Sidebar({ isOpen, onClose }) {
                 return styles.navItem;
               }}
             >
-              <span className={styles.icon}>{item.icon}</span>
+              <ItemIcon className={styles.icon} />
               {!collapsed && <span className={styles.label}>{item.label}</span>}
             </NavLink>
           );
         })}
       </nav>
 
-      <button className={styles.logoutBtn} onClick={handleLogout}>
-        <span>🚪</span>
+      <button className={styles.logoutBtn} onClick={handleLogout} title="Logout">
+        <ArrowRightOnRectangleIcon className={styles.icon} />
         {!collapsed && <span>Logout</span>}
       </button>
     </aside>

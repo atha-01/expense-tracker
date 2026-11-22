@@ -121,3 +121,51 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Card top icons */
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cardHeader .cardLabel {
+  margin-bottom: 0;
+}
+
+.cardTopIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--text-secondary);
+}
+
+.greenIcon { color: var(--income-green); }
+.redIcon   { color: var(--expense-red); }
+.amberIcon { color: var(--warning-amber); }
+
+/* Recent transactions modern icon badges */
+.iconBadge {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.badgeIncome {
+  background-color: var(--income-bg);
+  color: var(--income-green);
+}
+
+.badgeExpense {
+  background-color: var(--expense-bg);
+  color: var(--expense-red);
+}
+
+.txSvg {
+  width: 20px;
+  height: 20px;
+}
