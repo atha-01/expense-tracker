@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import heroBg from '../../../assets/fintech_hero_clean.jpg';
 import { useTheme } from '../../../controllers/ThemeContext';
 import {
   WalletIcon,
@@ -39,6 +41,12 @@ export default function LandingPage() {
       <div className={styles.ambientGlow} />
       <div className={styles.gridOverlay} />
 
+            {/* Balanced Background Image Layer */}
+      <div className={styles.bgImageWrapper}>
+        <img src={heroBg} alt="Finance Background" className={styles.bgImage} />
+        <div className={styles.bgOverlay} />
+      </div>
+
       {/* HeroUI Pro Floating Pill Navbar */}
       <header className={styles.headerWrapper}>
         <nav className={styles.floatingNavbar}>
@@ -69,7 +77,7 @@ export default function LandingPage() {
               className={`${styles.navLink} ${activeNav === 'bills' ? styles.activeNavLink : ''}`}
               onClick={() => handleNavClick('bills')}
             >
-              Bills Radar
+              Track Bills
             </button>
             <button
               className={`${styles.navLink} ${activeNav === 'accounts' ? styles.activeNavLink : ''}`}
@@ -82,22 +90,22 @@ export default function LandingPage() {
           {/* Right: Search, Notifications, Theme & Auth */}
           <div className={styles.navRight}>
             
-            <button
+            {/* <button
               className={styles.iconActionBtn}
               title="Search"
               onClick={() => goToAuth('login')}
             >
               <MagnifyingGlassIcon className={styles.navIcon} />
-            </button>
+            </button> */}
 
-            <button
+            {/* <button
               className={styles.iconActionBtn}
               title="Notifications"
               onClick={() => goToAuth('login')}
             >
               <BellIcon className={styles.navIcon} />
               <span className={styles.notificationDot} />
-            </button>
+            </button> */}
 
             <button
               className={styles.iconActionBtn}
@@ -141,7 +149,7 @@ export default function LandingPage() {
         </h1>
 
         <p className={styles.subheadline}>
-          Take full control of every rupee. Track daily spending, anticipate upcoming bills before they’re overdue, and protect your budget with confidence — all in one modern dashboard.
+          Take full control of every rupee. Track daily spending, anticipate upcoming bills before they're overdue, and protect your budget with confidence — all in one modern dashboard.
         </p>
 
         {/* Action Buttons */}
@@ -163,9 +171,9 @@ export default function LandingPage() {
             <div className={`${styles.cardIconWrap} ${styles.greenGlow}`}>
               <ShieldCheckIcon className={styles.cardSvg} />
             </div>
-            <h3 className={styles.cardTitle}>Smart Budget Health</h3>
+            <h3 className={styles.cardTitle}>Budget with Precision</h3>
             <p className={styles.cardDescription}>
-              Real-time financial pulse calculates your safe daily burn rate and alerts you before you exceed your target.
+              Know exactly how much you can safely spend each day without accidentally blowing your monthly limit.
             </p>
           </div>
 
@@ -173,9 +181,9 @@ export default function LandingPage() {
             <div className={`${styles.cardIconWrap} ${styles.blueGlow}`}>
               <ClockIcon className={styles.cardSvg} />
             </div>
-            <h3 className={styles.cardTitle}>Upcoming Bills Radar</h3>
+            <h3 className={styles.cardTitle}>Never Miss a Due Date</h3>
             <p className={styles.cardDescription}>
-              Track paid and unpaid subscriptions with automatic overdue detection so late penalties never catch you off guard.
+              Track every recurring bill and subscription in one spot with automatic alerts before late fees hit.
             </p>
           </div>
 
@@ -183,9 +191,9 @@ export default function LandingPage() {
             <div className={`${styles.cardIconWrap} ${styles.amberGlow}`}>
               <BuildingLibraryIcon className={styles.cardSvg} />
             </div>
-            <h3 className={styles.cardTitle}>Net Worth Ledger</h3>
+            <h3 className={styles.cardTitle}>All Accounts, One Balance</h3>
             <p className={styles.cardDescription}>
-              Unify Cash, Bank accounts, Credit Cards, and UPI in one live balance ledger with automatic transaction math.
+              Combine your Cash, Bank accounts, Credit Cards, and UPI into a single real-time net worth total
             </p>
           </div>
 
@@ -200,7 +208,7 @@ export default function LandingPage() {
             <WalletIcon className={styles.footerIcon} />
             <span>SpendWise</span>
           </div>
-          <p>© 2026 SpendWise. Modern full-stack expense tracking built on MERN.</p>
+          <p>© 2026 SpendWise. Modern full-stack expense tracking App.</p>
         </div>
       </footer>
 

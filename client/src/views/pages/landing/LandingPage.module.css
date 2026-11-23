@@ -8,37 +8,53 @@
   overflow-x: hidden;
 }
 
-/* Crisp Ambient Tech Glow & Grid */
-.ambientGlow {
+/* Background Image Layer (Visible, Not Too Punchy, Smooth Fade) */
+.bgImageWrapper {
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 900px;
-  height: 520px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.16) 0%, rgba(16, 185, 129, 0.06) 50%, transparent 75%);
-  filter: blur(100px);
+  left: 0;
+  width: 100%;
+  height: 750px;
+  overflow: hidden;
   pointer-events: none;
   z-index: 0;
 }
 
-:global([data-theme='light']) .ambientGlow {
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(16, 185, 129, 0.03) 50%, transparent 75%);
-  filter: blur(80px);
+.bgImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0.45;
+  filter: contrast(1.05) brightness(0.95);
 }
 
-.gridOverlay {
+/* Dark Mode Gradient Overlay: blends image seamlessly into background */
+.bgOverlay {
   position: absolute;
   inset: 0;
-  height: 900px;
-  background-image: radial-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
-  pointer-events: none;
-  z-index: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(9, 13, 22, 0.45) 0%,
+    rgba(9, 13, 22, 0.65) 50%,
+    var(--bg-primary) 100%
+  );
 }
 
+/* Light Mode Overrides */
+:global([data-theme='light']) .bgImage {
+  opacity: 0.32;
+  filter: contrast(1.1) brightness(1.05);
+}
+
+:global([data-theme='light']) .bgOverlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(248, 250, 252, 0.5) 0%,
+    rgba(248, 250, 252, 0.75) 50%,
+    var(--bg-primary) 100%
+  );
+}
 :global([data-theme='light']) .gridOverlay {
   background-image: radial-gradient(rgba(100, 116, 139, 0.14) 1px, transparent 1px);
 }
