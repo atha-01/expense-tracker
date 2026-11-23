@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import   { useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from '../../components/layout/Sidebar.jsx';
@@ -48,8 +49,8 @@ export default function DashboardPage() {
             <Route path="income" element={<IncomePage />} />
             <Route path="expenses" element={<ExpensesPage />} />
             <Route path="bills" element={<BillsPage />} />
-            <Route path="accounts" element={<AccountsPage />} />
-            <Route path="budget" element={<BudgetPage />} />
+            <Route path="accounts" element={<Navigate to="../home" replace />} />
+            <Route path="budget" element={<Navigate to="../home" replace />} />
           </Routes>
         </div>
       </div>

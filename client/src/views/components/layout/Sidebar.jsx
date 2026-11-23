@@ -6,8 +6,6 @@ import {
   ArrowTrendingUpIcon,
   ArrowTrendingDownIcon,
   DocumentTextIcon,
-  BuildingLibraryIcon,
-  ChartBarSquareIcon,
   ArrowRightOnRectangleIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -20,8 +18,6 @@ const navItems = [
   { path: '/dashboard/income',   label: 'Income',    Icon: ArrowTrendingUpIcon },
   { path: '/dashboard/expenses', label: 'Expenses',  Icon: ArrowTrendingDownIcon },
   { path: '/dashboard/bills',    label: 'Bills',     Icon: DocumentTextIcon },
-  { path: '/dashboard/accounts', label: 'Accounts',  Icon: BuildingLibraryIcon },
-  { path: '/dashboard/budget',   label: 'Budget',    Icon: ChartBarSquareIcon },
 ];
 
 export default function Sidebar({ isOpen, onClose }) {

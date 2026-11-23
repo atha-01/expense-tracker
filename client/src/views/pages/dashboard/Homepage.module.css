@@ -4,112 +4,555 @@
   gap: 24px;
 }
 
-.cards {
+/* ========================================================================== */
+/* 1. Accounts & Net Worth Strip                                             */
+/* ========================================================================== */
+.accountsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sectionHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sectionTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.sectionSub {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.addAccountPillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background-color: var(--primary);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.2s ease;
+}
+
+.addAccountPillBtn:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.plusIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.accountsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 280px repeat(auto-fill, minmax(200px, 1fr));
   gap: 16px;
 }
 
-.card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
+/* Net Worth Main Hero Card */
+.netWorthCard {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
   padding: 20px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
-.incomeCard {
-  border-left: 4px solid var(--income-green);
+:global([data-theme='light']) .netWorthCard {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
 }
 
-.expenseCard {
-  border-left: 4px solid var(--expense-red);
-}
-
-.cardHeader {
+.netWorthTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
 }
 
-.cardLabel {
+.netWorthLabel {
   font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+.netWorthIcon {
+  width: 22px;
+  height: 22px;
+  opacity: 0.9;
+}
+
+.netWorthValue {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.netWorthAccountsCount {
+  font-size: 0.78rem;
+  opacity: 0.75;
+}
+
+/* Individual Account Card */
+.accountCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-md);
+  transition: all 0.2s ease;
+}
+
+.accountCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.accCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.accTypeBadge {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: rgba(59, 130, 246, 0.12);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accSvg {
+  width: 18px;
+  height: 18px;
+}
+
+.accTypeName {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 0.05em;
+}
+
+.accName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.accBalance {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.negativeBal {
+  color: var(--expense-red);
+}
+
+/* ========================================================================== */
+/* 2. Two-Column Grid: Budget Pie Chart & Transactions Table                 */
+/* ========================================================================== */
+.twoColumnGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 20px;
+}
+
+.budgetCard,
+.transactionsCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.cardHeading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.cardHeaderWithAction,
+.cardHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+/* Month Switcher */
+.monthSwitcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.arrowBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--text-secondary);
+  background-color: rgba(255, 255, 255, 0.06);
+  transition: all 0.15s ease;
+}
+
+:global([data-theme='light']) .arrowBtn {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.arrowBtn:hover {
+  color: var(--text-primary);
+  background-color: var(--primary);
+}
+
+.arrowSvg {
+  width: 14px;
+  height: 14px;
+}
+
+.currentMonthText {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.editBudgetBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.editBudgetBtn:hover {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.editBudgetSvg {
+  width: 14px;
+  height: 14px;
+}
+
+/* SVG Donut Pie Chart Container */
+.pieContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.svgWrapper {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donutSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg); /* Starts the pie chart at 12 o'clock */
+}
+
+.donutBgRing {
+  fill: none;
+  stroke: rgba(148, 163, 184, 0.15);
+  stroke-width: 18;
+}
+
+.donutEmptyRing {
+  fill: none;
+  stroke: rgba(148, 163, 184, 0.2);
+  stroke-width: 18;
+}
+
+.donutSlice {
+  transition: stroke-dasharray 0.4s ease, stroke-dashoffset 0.4s ease;
+}
+
+.donutCenterContent {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.centerLabel {
+  font-size: 0.72rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.cardTopIcon {
-  width: 20px;
-  height: 20px;
-  color: var(--text-secondary);
+.centerAmount {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 2px 0;
 }
 
-.greenIcon { color: var(--income-green); }
-.redIcon   { color: var(--expense-red); }
-.amberIcon { color: var(--warning-amber); }
+.healthBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+}
 
-.cardAmount {
-  font-size: 1.5rem;
+.healthGood {
+  background-color: var(--income-bg);
+  color: var(--income-green);
+}
+
+.healthWarning {
+  background-color: var(--warning-bg);
+  color: var(--warning-amber);
+}
+
+.healthDanger {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: var(--expense-red);
+}
+
+.budgetComparison {
+  display: flex;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 10px;
+}
+
+.budgetComparison strong {
+  color: var(--text-primary);
+}
+
+/* Category Legend Breakdown */
+.categoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 14px;
+}
+
+.noExpensesText {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 12px 0;
+}
+
+.categoryRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.86rem;
+}
+
+.catLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.colorDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.catName {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.catRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.catPercentage {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.catAmount {
   font-weight: 700;
   color: var(--text-primary);
 }
 
-.budgetSub {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-top: 4px;
-}
-
-/* 3-Column Table Section */
-.section {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 8px 16px 16px 16px;
-  overflow: visible;
-}
-
+/* ========================================================================== */
+/* 3. 3-Column Transactions Table Styles                                     */
+/* ========================================================================== */
 .tableWrapper {
-  width: 100%;
   overflow-x: auto;
+  flex: 1;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  text-align: left;
 }
 
-/* Table Headers */
-.table thead tr {
+.thTransaction,
+.thDate,
+.thAmount {
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
   border-bottom: 1px solid var(--border-color);
 }
 
-.table th {
-  padding: 14px 12px;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
-  font-weight: 600;
-}
-
 .thTransaction {
-  width: 50%;
+  text-align: left;
 }
 
 .thDate {
-  width: 25%;
   text-align: center;
 }
 
 .thAmount {
-  width: 25%;
   text-align: right;
 }
 
-/* Column Header Filter Dropdown */
+.tableRow {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s ease;
+}
+
+.tableRow:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+:global([data-theme='light']) .tableRow:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.tdTransaction,
+.tdDate,
+.tdAmount {
+  padding: 12px 14px;
+}
+
+.itemMetaLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconBadge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badgeIncome {
+  background-color: var(--income-bg);
+  color: var(--income-green);
+}
+
+.badgeExpense {
+  background-color: rgba(239, 68, 68, 0.12);
+  color: var(--expense-red);
+}
+
+.txSvg {
+  width: 18px;
+  height: 18px;
+}
+
+.itemTitle {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.itemCategorySub {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.tdDate {
+  text-align: center;
+}
+
+.dateText {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.tdAmount {
+  text-align: right;
+}
+
+.amountIncome {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--income-green);
+}
+
+.amountExpense {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--expense-red);
+}
+
+.emptyTd {
+  padding: 30px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Filter Dropdown in Table Header */
 .filterWrapper {
   position: relative;
   display: inline-block;
@@ -119,26 +562,27 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background-color: var(--bg-primary);
+  padding: 5px 10px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.06);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  cursor: pointer;
   transition: all 0.15s ease;
 }
 
+:global([data-theme='light']) .filterTrigger {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
 .filterTrigger:hover {
-  background-color: var(--bg-surface-hover);
   border-color: var(--primary);
 }
 
 .chevron {
   width: 14px;
   height: 14px;
-  color: var(--text-secondary);
   transition: transform 0.2s ease;
 }
 
@@ -150,12 +594,12 @@
   position: absolute;
   top: calc(100% + 6px);
   left: 0;
+  z-index: 50;
+  min-width: 160px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 10px;
-  box-shadow: var(--shadow-md);
-  z-index: 50;
-  min-width: 170px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   padding: 6px;
 }
 
@@ -163,20 +607,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 6px;
-  font-size: 0.85rem;
-  color: var(--text-primary);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .filterItem:hover {
-  background-color: var(--bg-surface-hover);
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
 }
 
 .filterActive {
-  background-color: var(--primary-light);
   color: var(--primary);
   font-weight: 600;
 }
@@ -184,122 +628,142 @@
 .checkSvg {
   width: 14px;
   height: 14px;
-  color: var(--primary);
 }
 
-/* Table Rows & Cells */
-.tableRow {
-  border-bottom: 1px solid var(--border-color);
-  transition: background-color 0.15s ease;
-}
-
-.tableRow:last-child {
-  border-bottom: none;
-}
-
-.tableRow:hover {
-  background-color: var(--bg-surface-hover);
-}
-
-.table td {
-  padding: 14px 12px;
-  vertical-align: middle;
-}
-
-.tdTransaction {
-  width: 50%;
-}
-
-.tdDate {
-  width: 25%;
-  text-align: center;
-}
-
-.tdAmount {
-  width: 25%;
-  text-align: right;
-}
-
-.itemMetaLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.itemTitle {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.itemCategorySub {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-transform: capitalize;
-  margin-top: 2px;
-}
-
-.dateText {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
-.amountIncome {
-  font-weight: 700;
-  color: var(--income-green);
-  font-size: 1rem;
-}
-
-.amountExpense {
-  font-weight: 700;
-  color: var(--expense-red);
-  font-size: 1rem;
-}
-
-/* Icon Badges */
-.iconBadge {
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
+/* ========================================================================== */
+/* 4. Modals (Add Account & Edit Budget)                                      */
+/* ========================================================================== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  z-index: 200;
+  padding: 20px;
 }
 
-.badgeIncome {
-  background-color: var(--income-bg);
-  color: var(--income-green);
+.modalContent {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 
-.badgeExpense {
-  background-color: var(--expense-bg);
-  color: var(--expense-red);
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
-.txSvg {
+.modalTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.closeBtn {
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.closeBtn:hover {
+  color: var(--text-primary);
+}
+
+.closeIcon {
   width: 20px;
   height: 20px;
 }
 
-.emptyTd {
-  text-align: center;
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
   color: var(--text-secondary);
-  padding: 32px 0;
+}
+
+.formInput,
+.formSelect {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s ease;
 }
 
-@media (max-width: 768px) {
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
+:global([data-theme='light']) .formInput,
+:global([data-theme='light']) .formSelect {
+  background-color: #ffffff;
 }
 
-@media (max-width: 480px) {
-  .cards {
+.formInput:focus,
+.formSelect:focus {
+  border-color: var(--primary);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.cancelBtn {
+  padding: 9px 18px;
+  border-radius: 9999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.cancelBtn:hover {
+  color: var(--text-primary);
+}
+
+.submitBtn {
+  padding: 9px 20px;
+  border-radius: 9999px;
+  background-color: var(--primary);
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.15s ease;
+}
+
+.submitBtn:hover {
+  background-color: var(--primary-hover);
+}
+
+/* ========================================================================== */
+/* 5. Mobile Responsiveness                                                  */
+/* ========================================================================== */
+@media (max-width: 960px) {
+  .twoColumnGrid {
     grid-template-columns: 1fr;
   }
-  .tdDate {
-    font-size: 0.75rem;
+  .accountsGrid {
+    grid-template-columns: 1fr;
   }
 }
