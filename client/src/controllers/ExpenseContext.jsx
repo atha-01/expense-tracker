@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 import{ createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
@@ -259,6 +261,29 @@ export function ExpenseProvider({ children }) {
       console.error('Error deleting account:', err);
     }
   }
+    async function editAccount(id, updatedData) {
+    try {
+      const response = await fetch('http://localhost:5000/api/accounts/' + id, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: JSON.stringify(updatedData),
+      });
+      const savedData = await response.json();
+      const itemWithId = { ...savedData, id: savedData._id };
+
+      setAccounts(function(prev) {
+        return prev.map(function(acc) {
+          if (acc.id === id) {
+            return itemWithId;
+          }
+          return acc;
+        });
+      });
+    } catch (err) {
+      console.error('Error updating account:', err);
+    }
+  }
+
 
   // --------------------------------------------------------------------------
   // Budget
@@ -277,7 +302,7 @@ export function ExpenseProvider({ children }) {
     }
   }
 
-  return (
+     return (
     <ExpenseContext.Provider
       value={{
         transactions,
@@ -286,11 +311,13 @@ export function ExpenseProvider({ children }) {
         monthlyBudget,
         addTransaction,
         updateTransaction,
+        editTransaction: updateTransaction,
         deleteTransaction,
         addBill,
         updateBillStatus,
         deleteBill,
         addAccount,
+        editAccount,
         deleteAccount,
         saveBudget,
       }}

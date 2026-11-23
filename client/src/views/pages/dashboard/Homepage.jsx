@@ -1,4 +1,4 @@
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
 import { getBudgetHealth } from '../../../models/constants';
@@ -15,6 +15,7 @@ import {
   ChevronRightIcon,
   CheckIcon,
   PencilSquareIcon,
+  TrashIcon,
   ShoppingCartIcon,
   HomeIcon,
   BoltIcon,
@@ -33,17 +34,17 @@ import styles from './HomePage.module.css';
 
 // Distinct modern fintech colors for the spending pie chart
 const CATEGORY_COLORS = {
-  food: '#f59e0b',          // Amber
-  transport: '#8b5cf6',     // Violet
-  rent: '#3b82f6',          // Blue
-  utilities: '#06b6d4',     // Cyan
-  health: '#ef4444',        // Red
-  grocery: '#10b981',       // Emerald
-  entertainment: '#ec4899',  // Pink
-  clothing: '#f97316',      // Orange
-  education: '#6366f1',     // Indigo
-  subscriptions: '#14b8a6', // Teal
-  other: '#64748b',         // Slate
+  food: '#f59e0b',
+  transport: '#8b5cf6',
+  rent: '#3b82f6',
+  utilities: '#06b6d4',
+  health: '#ef4444',
+  grocery: '#10b981',
+  entertainment: '#ec4899',
+  clothing: '#f97316',
+  education: '#6366f1',
+  subscriptions: '#14b8a6',
+  other: '#64748b',
 };
 
 export default function HomePage() {
@@ -51,6 +52,8 @@ export default function HomePage() {
     transactions,
     accounts,
     addAccount,
+    editAccount,
+    deleteAccount,
     monthlyBudget,
     saveBudget,
   } = useExpense();
@@ -89,7 +92,6 @@ export default function HomePage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Filter valid transactions
   const validTransactions = transactions.filter(
     (item) => item && item.amount !== undefined && item.type !== undefined
   );
@@ -126,24 +128,80 @@ export default function HomePage() {
   }
 
   // --------------------------------------------------------------------------
-  // Quick Add Account Modal State
+  // Add Money / Account Dynamic Modal State
   // --------------------------------------------------------------------------
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
-  const [newAccName, setNewAccName] = useState('');
-  const [newAccType, setNewAccType] = useState('bank');
-  const [newAccBalance, setNewAccBalance] = useState('');
+  const [accountCategory, setAccountCategory] = useState('bank'); // 'bank' | 'cash' | 'upi' | 'card'
+  const [accName, setAccName] = useState('');
+  const [bankSubtype, setBankSubtype] = useState('Savings Account');
+  const [upiProvider, setUpiProvider] = useState('Google Pay');
+  const [accBalance, setAccBalance] = useState('');
+
+  // Auto-fill sensible default name when switching tab
+  function handleCategorySwitch(cat) {
+    setAccountCategory(cat);
+    if (cat === 'bank') setAccName('HDFC Bank');
+    else if (cat === 'cash') setAccName('Physical Cash');
+    else if (cat === 'upi') setAccName('Google Pay');
+    else if (cat === 'card') setAccName('Credit Card');
+  }
+
+  function openAddModal() {
+    setAccountCategory('bank');
+    setAccName('HDFC Bank');
+    setBankSubtype('Savings Account');
+    setAccBalance('');
+    setShowAddAccountModal(true);
+  }
 
   async function handleCreateAccount(e) {
     e.preventDefault();
-    if (!newAccName.trim() || newAccBalance === '') return;
+    if (!accName.trim() || accBalance === '') return;
+
+    let finalName = accName.trim();
+    if (accountCategory === 'bank' && bankSubtype) {
+      finalName = `${finalName} (${bankSubtype})`;
+    }
+
     await addAccount({
-      name: newAccName.trim(),
-      type: newAccType,
-      openingBalance: Number(newAccBalance) || 0,
+      name: finalName,
+      type: accountCategory,
+      openingBalance: Number(accBalance) || 0,
     });
-    setNewAccName('');
-    setNewAccBalance('');
+
     setShowAddAccountModal(false);
+  }
+
+  // --------------------------------------------------------------------------
+  // Edit Account Modal State
+  // --------------------------------------------------------------------------
+  const [editingAccount, setEditingAccount] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editBalance, setEditBalance] = useState('');
+
+  function openEditModal(account) {
+    setEditingAccount(account);
+    setEditName(account.name);
+    setEditBalance(account.openingBalance);
+  }
+
+  async function handleSaveEditAccount(e) {
+    e.preventDefault();
+    if (!editingAccount || !editName.trim() || editBalance === '') return;
+
+    await editAccount(editingAccount.id, {
+      name: editName.trim(),
+      type: editingAccount.type,
+      openingBalance: Number(editBalance) || 0,
+    });
+
+    setEditingAccount(null);
+  }
+
+  async function handleDeleteAccount(id, name) {
+    if (window.confirm(`Are you sure you want to remove "${name}" from your accounts?`)) {
+      await deleteAccount(id);
+    }
   }
 
   // --------------------------------------------------------------------------
@@ -192,11 +250,9 @@ export default function HomePage() {
 
   const budgetHealth = getBudgetHealth(totalSpentThisMonth, monthlyBudget);
 
-  // --------------------------------------------------------------------------
-  // SVG Donut Pie Chart Arc Generation
-  // --------------------------------------------------------------------------
+  // SVG Pie Chart Math
   const RADIUS = 65;
-  const CIRCUMFERENCE = 2 * Math.PI * RADIUS; // ~408.4
+  const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
   let accumulatedOffset = 0;
 
   // --------------------------------------------------------------------------
@@ -236,26 +292,26 @@ export default function HomePage() {
     <div className={styles.page}>
 
       {/* ==================================================================== */}
-      {/* 1. ACCOUNTS & NET WORTH STRIP                                       */}
+      {/* 1. ACCOUNTS & NET WORTH STRIP (PINNED NET WORTH + HORIZONTAL SCROLL)   */}
       {/* ==================================================================== */}
       <section className={styles.accountsSection}>
         <div className={styles.sectionHeaderRow}>
           <div>
-            <h2 className={styles.sectionTitle}>Accounts & Net Worth</h2>
-            <p className={styles.sectionSub}>Live consolidated balances across all your wallets & cards</p>
+            <h2 className={styles.sectionTitle}>Accounts & Balances</h2>
+            <p className={styles.sectionSub}>Live consolidated balances across your accounts and wallets</p>
           </div>
           <button
             type="button"
             className={styles.addAccountPillBtn}
-            onClick={() => setShowAddAccountModal(true)}
+            onClick={openAddModal}
           >
             <PlusIcon className={styles.plusIcon} />
-            <span>Add Account</span>
+            <span>Add Money / Account</span>
           </button>
         </div>
 
-        <div className={styles.accountsGrid}>
-          {/* Main Net Worth Card */}
+        <div className={styles.accountsRowContainer}>
+          {/* Pinned Total Net Worth Card (Always Visible) */}
           <div className={styles.netWorthCard}>
             <div className={styles.netWorthTop}>
               <span className={styles.netWorthLabel}>Total Net Worth</span>
@@ -267,26 +323,52 @@ export default function HomePage() {
             </span>
           </div>
 
-          {/* Account Cards */}
-          {accounts.map((acc) => {
-            const bal = getAccountBalance(acc);
-            return (
-              <div key={acc.id || acc._id} className={styles.accountCard}>
-                <div className={styles.accCardTop}>
-                  <div className={styles.accTypeBadge}>
-                    {renderAccountTypeIcon(acc.type)}
-                  </div>
-                  <span className={styles.accTypeName}>
-                    {acc.type ? acc.type.toUpperCase() : 'BANK'}
-                  </span>
-                </div>
-                <h4 className={styles.accName}>{acc.name}</h4>
-                <p className={`${styles.accBalance} ${bal < 0 ? styles.negativeBal : ''}`}>
-                  ₹{bal.toLocaleString()}
-                </p>
+          {/* Horizontally Scrollable Account Cards */}
+          <div className={styles.accountsScrollTrack}>
+            {accounts.length === 0 ? (
+              <div className={styles.emptyAccountsPrompt}>
+                <span>No accounts yet. Click <strong>"Add Money / Account"</strong> to get started!</span>
               </div>
-            );
-          })}
+            ) : (
+              accounts.map((acc) => {
+                const bal = getAccountBalance(acc);
+                return (
+                  <div key={acc.id || acc._id} className={styles.accountCard}>
+                    <div className={styles.accCardTop}>
+                      <div className={styles.accTypeBadge}>
+                        {renderAccountTypeIcon(acc.type)}
+                      </div>
+                      
+                      {/* Action buttons: Edit & Delete */}
+                      <div className={styles.accActions}>
+                        <button
+                          type="button"
+                          className={styles.accActionBtn}
+                          onClick={() => openEditModal(acc)}
+                          title="Edit Account"
+                        >
+                          <PencilSquareIcon className={styles.actionSvg} />
+                        </button>
+                        <button
+                          type="button"
+                          className={styles.accActionBtnDanger}
+                          onClick={() => handleDeleteAccount(acc.id || acc._id, acc.name)}
+                          title="Delete Account"
+                        >
+                          <TrashIcon className={styles.actionSvg} />
+                        </button>
+                      </div>
+                    </div>
+
+                    <h4 className={styles.accName} title={acc.name}>{acc.name}</h4>
+                    <p className={`${styles.accBalance} ${bal < 0 ? styles.negativeBal : ''}`}>
+                      ₹{bal.toLocaleString()}
+                    </p>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </section>
 
@@ -330,25 +412,12 @@ export default function HomePage() {
           <div className={styles.pieContainer}>
             <div className={styles.svgWrapper}>
               <svg viewBox="0 0 160 160" className={styles.donutSvg}>
-                {/* Background Ring */}
-                <circle
-                  cx="80"
-                  cy="80"
-                  r={RADIUS}
-                  className={styles.donutBgRing}
-                />
+                <circle cx="80" cy="80" r={RADIUS} className={styles.donutBgRing} />
 
-                {/* Empty State Ring if zero spending */}
                 {categorySlices.length === 0 && (
-                  <circle
-                    cx="80"
-                    cy="80"
-                    r={RADIUS}
-                    className={styles.donutEmptyRing}
-                  />
+                  <circle cx="80" cy="80" r={RADIUS} className={styles.donutEmptyRing} />
                 )}
 
-                {/* Slices for Each Category */}
                 {categorySlices.map((slice) => {
                   const strokeDash = (slice.percentage / 100) * CIRCUMFERENCE;
                   const strokeOffset = accumulatedOffset;
@@ -371,7 +440,6 @@ export default function HomePage() {
                 })}
               </svg>
 
-              {/* Center Donut Text */}
               <div className={styles.donutCenterContent}>
                 <span className={styles.centerLabel}>Spent</span>
                 <span className={styles.centerAmount}>₹{totalSpentThisMonth.toLocaleString()}</span>
@@ -384,7 +452,6 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Target Budget Comparison Subtitle */}
             <div className={styles.budgetComparison}>
               <span>Limit: <strong>₹{(monthlyBudget || 0).toLocaleString()}</strong></span>
               <span>
@@ -421,7 +488,6 @@ export default function HomePage() {
           <div className={styles.cardHeaderRow}>
             <h3 className={styles.cardHeading}>Recent Activity</h3>
             
-            {/* Filter Dropdown */}
             <div className={styles.filterWrapper} ref={filterRef}>
               <button
                 type="button"
@@ -513,13 +579,16 @@ export default function HomePage() {
       </div>
 
       {/* ==================================================================== */}
-      {/* 3. MODAL: ADD ACCOUNT                                                */}
+      {/* 3. DYNAMIC MODAL: ADD MONEY / ACCOUNT (AUTO-SELECTED BANK OPTION)     */}
       {/* ==================================================================== */}
       {showAddAccountModal && (
         <div className={styles.modalOverlay} onClick={() => setShowAddAccountModal(false)}>
           <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>Add New Account</h3>
+              <div>
+                <h3 className={styles.modalTitle}>Add Money / Account</h3>
+                <p className={styles.modalSub}>Select how you want to add funds or link a new wallet</p>
+              </div>
               <button
                 type="button"
                 className={styles.closeBtn}
@@ -529,40 +598,133 @@ export default function HomePage() {
               </button>
             </div>
 
+            {/* Type Selector Tabs (Bank auto-selected) */}
+            <div className={styles.methodSelector}>
+              <button
+                type="button"
+                className={`${styles.methodTab} ${accountCategory === 'bank' ? styles.methodActive : ''}`}
+                onClick={() => handleCategorySwitch('bank')}
+              >
+                <BuildingLibraryIcon className={styles.methodTabSvg} />
+                <span>Bank Account</span>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.methodTab} ${accountCategory === 'cash' ? styles.methodActive : ''}`}
+                onClick={() => handleCategorySwitch('cash')}
+              >
+                <BanknotesIcon className={styles.methodTabSvg} />
+                <span>Cash in Hand</span>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.methodTab} ${accountCategory === 'upi' ? styles.methodActive : ''}`}
+                onClick={() => handleCategorySwitch('upi')}
+              >
+                <DevicePhoneMobileIcon className={styles.methodTabSvg} />
+                <span>UPI / Wallet</span>
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.methodTab} ${accountCategory === 'card' ? styles.methodActive : ''}`}
+                onClick={() => handleCategorySwitch('card')}
+              >
+                <CreditCardIcon className={styles.methodTabSvg} />
+                <span>Credit Card</span>
+              </button>
+            </div>
+
             <form onSubmit={handleCreateAccount} className={styles.modalForm}>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Account Name</label>
-                <input
-                  type="text"
-                  placeholder="e.g. HDFC Salary, Cash Wallet"
-                  value={newAccName}
-                  onChange={(e) => setNewAccName(e.target.value)}
-                  className={styles.formInput}
-                  required
-                />
-              </div>
+              {/* Dynamic Fields: BANK ACCOUNT */}
+              {accountCategory === 'bank' && (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Bank Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. HDFC Bank, SBI, ICICI"
+                      value={accName}
+                      onChange={(e) => setAccName(e.target.value)}
+                      className={styles.formInput}
+                      required
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>Account Type</label>
+                    <select
+                      value={bankSubtype}
+                      onChange={(e) => setBankSubtype(e.target.value)}
+                      className={styles.formSelect}
+                    >
+                      <option value="Savings Account">Savings Account</option>
+                      <option value="Salary Account">Salary Account</option>
+                      <option value="Current Account">Current Account</option>
+                      <option value="Fixed Deposit">Fixed Deposit</option>
+                    </select>
+                  </div>
+                </>
+              )}
 
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Account Type</label>
-                <select
-                  value={newAccType}
-                  onChange={(e) => setNewAccType(e.target.value)}
-                  className={styles.formSelect}
-                >
-                  <option value="bank">Bank Account</option>
-                  <option value="cash">Cash in Hand</option>
-                  <option value="card">Credit Card</option>
-                  <option value="upi">UPI / Digital Wallet</option>
-                </select>
-              </div>
+              {/* Dynamic Fields: CASH */}
+              {accountCategory === 'cash' && (
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Cash Label / Stash</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Physical Cash, Wallet, Locker"
+                    value={accName}
+                    onChange={(e) => setAccName(e.target.value)}
+                    className={styles.formInput}
+                    required
+                  />
+                </div>
+              )}
 
+              {/* Dynamic Fields: UPI / WALLET */}
+              {accountCategory === 'upi' && (
+                <>
+                  <div className={styles.formGroup}>
+                    <label className={styles.formLabel}>App / Wallet Name</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Google Pay, PhonePe, Paytm"
+                      value={accName}
+                      onChange={(e) => setAccName(e.target.value)}
+                      className={styles.formInput}
+                      required
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Dynamic Fields: CREDIT CARD */}
+              {accountCategory === 'card' && (
+                <div className={styles.formGroup}>
+                  <label className={styles.formLabel}>Card Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Amazon Pay ICICI, HDFC Regalia"
+                    value={accName}
+                    onChange={(e) => setAccName(e.target.value)}
+                    className={styles.formInput}
+                    required
+                  />
+                </div>
+              )}
+
+              {/* Amount Field (Universal) */}
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Opening Balance (₹)</label>
+                <label className={styles.formLabel}>
+                  {accountCategory === 'card' ? 'Initial Outstanding / Balance (₹)' : 'Opening Balance / Amount to Add (₹)'}
+                </label>
                 <input
                   type="number"
-                  placeholder="e.g. 5000"
-                  value={newAccBalance}
-                  onChange={(e) => setNewAccBalance(e.target.value)}
+                  placeholder="e.g. 10000"
+                  value={accBalance}
+                  onChange={(e) => setAccBalance(e.target.value)}
                   className={styles.formInput}
                   required
                 />
@@ -577,7 +739,7 @@ export default function HomePage() {
                   Cancel
                 </button>
                 <button type="submit" className={styles.submitBtn}>
-                  Create Account
+                  Confirm & Add Amount
                 </button>
               </div>
             </form>
@@ -586,7 +748,67 @@ export default function HomePage() {
       )}
 
       {/* ==================================================================== */}
-      {/* 4. MODAL: SET BUDGET CAP                                            */}
+      {/* 4. MODAL: EDIT ACCOUNT                                               */}
+      {/* ==================================================================== */}
+      {editingAccount && (
+        <div className={styles.modalOverlay} onClick={() => setEditingAccount(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div>
+                <h3 className={styles.modalTitle}>Edit Account Card</h3>
+                <p className={styles.modalSub}>Update the name or opening balance</p>
+              </div>
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={() => setEditingAccount(null)}
+              >
+                <XMarkIcon className={styles.closeIcon} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditAccount} className={styles.modalForm}>
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Account Name</label>
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className={styles.formInput}
+                  required
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Opening Balance (₹)</label>
+                <input
+                  type="number"
+                  value={editBalance}
+                  onChange={(e) => setEditBalance(e.target.value)}
+                  className={styles.formInput}
+                  required
+                />
+              </div>
+
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className={styles.cancelBtn}
+                  onClick={() => setEditingAccount(null)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className={styles.submitBtn}>
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* 5. MODAL: SET BUDGET CAP                                            */}
       {/* ==================================================================== */}
       {showBudgetModal && (
         <div className={styles.modalOverlay} onClick={() => setShowBudgetModal(false)}>

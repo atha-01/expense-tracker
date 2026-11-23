@@ -5,12 +5,13 @@
 }
 
 /* ========================================================================== */
-/* 1. Accounts & Net Worth Strip                                             */
+/* 1. Accounts Row: Pinned Net Worth + Scrollable Account Cards              */
 /* ========================================================================== */
 .accountsSection {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  width: 100%;
 }
 
 .sectionHeaderRow {
@@ -43,6 +44,7 @@
   font-weight: 600;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .addAccountPillBtn:hover {
@@ -55,14 +57,19 @@
   height: 16px;
 }
 
-.accountsGrid {
-  display: grid;
-  grid-template-columns: 280px repeat(auto-fill, minmax(200px, 1fr));
+/* Flex Row Container holding Pinned Net Worth and Scrollable Track */
+.accountsRowContainer {
+  display: flex;
+  align-items: stretch;
   gap: 16px;
+  width: 100%;
+  overflow: hidden;
 }
 
-/* Net Worth Main Hero Card */
+/* Pinned Net Worth Main Hero Card */
 .netWorthCard {
+  flex: 0 0 280px;
+  min-width: 280px;
   background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 16px;
@@ -109,8 +116,44 @@
   opacity: 0.75;
 }
 
-/* Individual Account Card */
+/* Horizontally Scrollable Track */
+.accountsScrollTrack {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 8px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+}
+
+.accountsScrollTrack::-webkit-scrollbar {
+  height: 6px;
+}
+
+.accountsScrollTrack::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.25);
+  border-radius: 9999px;
+}
+
+.emptyAccountsPrompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 16px;
+  border: 1px dashed var(--border-color);
+  width: 100%;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+/* Individual Account Card (Fixed Width in Scroll Track) */
 .accountCard {
+  flex: 0 0 220px;
+  min-width: 220px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 16px;
@@ -150,11 +193,45 @@
   height: 18px;
 }
 
-.accTypeName {
-  font-size: 0.72rem;
-  font-weight: 700;
+/* Edit & Delete Action Buttons on Account Card */
+.accActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.accActionBtn,
+.accActionBtnDanger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.accActionBtn {
   color: var(--text-secondary);
-  letter-spacing: 0.05em;
+}
+
+.accActionBtn:hover {
+  color: var(--primary);
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.accActionBtnDanger {
+  color: var(--text-secondary);
+}
+
+.accActionBtnDanger:hover {
+  color: var(--expense-red);
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+.actionSvg {
+  width: 15px;
+  height: 15px;
 }
 
 .accName {
@@ -162,6 +239,9 @@
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .accBalance {
@@ -292,7 +372,7 @@
 .donutSvg {
   width: 100%;
   height: 100%;
-  transform: rotate(-90deg); /* Starts the pie chart at 12 o'clock */
+  transform: rotate(-90deg);
 }
 
 .donutBgRing {
@@ -631,7 +711,7 @@
 }
 
 /* ========================================================================== */
-/* 4. Modals (Add Account & Edit Budget)                                      */
+/* 4. Dynamic Method Selector & Modal Styles                                  */
 /* ========================================================================== */
 .modalOverlay {
   position: fixed;
@@ -647,7 +727,7 @@
 
 .modalContent {
   width: 100%;
-  max-width: 440px;
+  max-width: 480px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 20px;
@@ -657,15 +737,21 @@
 
 .modalHeader {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .modalTitle {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.modalSub {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
 }
 
 .closeBtn {
@@ -680,6 +766,49 @@
 .closeIcon {
   width: 20px;
   height: 20px;
+}
+
+/* Visual Pill Tabs in Modal */
+.methodSelector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.methodTab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+:global([data-theme='light']) .methodTab {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.methodTab:hover {
+  border-color: var(--primary);
+  color: var(--text-primary);
+}
+
+.methodActive {
+  background-color: rgba(59, 130, 246, 0.12) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+.methodTabSvg {
+  width: 18px;
+  height: 18px;
 }
 
 .modalForm {
@@ -757,13 +886,10 @@
 }
 
 /* ========================================================================== */
-/* 5. Mobile Responsiveness                                                  */
+/* 5. Mobile & Tablet Responsiveness                                         */
 /* ========================================================================== */
 @media (max-width: 960px) {
   .twoColumnGrid {
-    grid-template-columns: 1fr;
-  }
-  .accountsGrid {
     grid-template-columns: 1fr;
   }
 }
