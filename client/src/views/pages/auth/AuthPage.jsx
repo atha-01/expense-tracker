@@ -1,17 +1,28 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+/* eslint-disable no-unused-vars */
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../controllers/AuthContext';
 import styles from './AuthPage.module.css';
 
 export default function AuthPage() {
   const { login, register } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [isLogin, setIsLogin] = useState(true);
+  // Step 1: Check if Landing Page requested "register" mode
+  let startAsLogin = true;
+  if (location.state) {
+    if (location.state.mode === 'register') {
+      startAsLogin = false;
+    }
+  }
+
+  // Step 2: Set the initial screen mode (true = Login, false = Register)
+  const [isLogin, setIsLogin] = useState(startAsLogin);
   const [formData, setFormData] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
 
-  function handleChange(e) {      // e is short for event
+  function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
