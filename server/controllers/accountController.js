@@ -36,3 +36,21 @@ export async function deleteAccount(req, res) {
   await account.deleteOne();
   res.json({ message: 'Account deleted' });
 }
+export async function updateAccount(req, res) {
+  const account = await Account.findById(req.params.id);
+
+  if (!account) {
+    return res.status(404).json({ message: 'Account not found' });
+  }
+
+  if (account.userId.toString() !== req.userId) {
+    return res.status(401).json({ message: 'Not authorized' });
+  }
+
+  account.name = req.body.name !== undefined ? req.body.name : account.name;
+  account.type = req.body.type !== undefined ? req.body.type : account.type;
+  account.openingBalance = req.body.openingBalance !== undefined ? req.body.openingBalance : account.openingBalance;
+
+  const updatedAccount = await account.save();
+  res.json(updatedAccount);
+}
