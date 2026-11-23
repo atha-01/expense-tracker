@@ -54,6 +54,7 @@ export default function HomePage() {
     addAccount,
     editAccount,
     deleteAccount,
+    addTransaction,
     monthlyBudget,
     saveBudget,
   } = useExpense();
@@ -131,11 +132,12 @@ export default function HomePage() {
   // Add Money / Account Dynamic Modal State
   // --------------------------------------------------------------------------
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
-  const [accountCategory, setAccountCategory] = useState('bank'); // 'bank' | 'cash' | 'upi' | 'card'
+  const [accountCategory, setAccountCategory] = useState('bank');
   const [accName, setAccName] = useState('');
   const [bankSubtype, setBankSubtype] = useState('Savings Account');
-  const [upiProvider, setUpiProvider] = useState('Google Pay');
   const [accBalance, setAccBalance] = useState('');
+  const [accDate, setAccDate] = useState(new Date().toISOString().split('T')[0]); // <--- Defaults to today
+  const [accNote, setAccNote] = useState('');
 
   // Auto-fill sensible default name when switching tab
   function handleCategorySwitch(cat) {
@@ -151,24 +153,39 @@ export default function HomePage() {
     setAccName('HDFC Bank');
     setBankSubtype('Savings Account');
     setAccBalance('');
+    setAccDate(new Date().toISOString().split('T')[0]);
+    setAccNote('');
     setShowAddAccountModal(true);
   }
 
   async function handleCreateAccount(e) {
     e.preventDefault();
     if (!accName.trim() || accBalance === '') return;
-
     let finalName = accName.trim();
     if (accountCategory === 'bank' && bankSubtype) {
       finalName = `${finalName} (${bankSubtype})`;
     }
-
+    const amountNum = Number(accBalance) || 0;
+    const selectedDate = accDate || new Date().toISOString().split('T')[0];
+    // 1. Create the account with 0 opening balance so the incoming transaction tracks it
     await addAccount({
       name: finalName,
       type: accountCategory,
-      openingBalance: Number(accBalance) || 0,
+      openingBalance: 0,
     });
 
+
+        // 2. Also log it as an Income Transaction so it appears in Recent Activity with its Date!
+    if (amountNum > 0) {
+      await addTransaction({
+        type: 'income',
+        amount: amountNum,
+        category: 'salary',
+        account: finalName,
+        date: selectedDate,
+        note: accNote.trim() || `Deposit to ${finalName}`,
+      });
+    }
     setShowAddAccountModal(false);
   }
 
@@ -730,6 +747,30 @@ export default function HomePage() {
                   onChange={(e) => setAccBalance(e.target.value)}
                   className={styles.formInput}
                   required
+                />
+              </div>
+              
+                            {/* Date Field */}
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Date</label>
+                <input
+                  type="date"
+                  value={accDate}
+                  onChange={(e) => setAccDate(e.target.value)}
+                  className={styles.formInput}
+                  required
+                />
+              </div>
+
+              {/* Note / Description (Optional) */}
+              <div className={styles.formGroup}>
+                <label className={styles.formLabel}>Note (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. November salary, Cash in hand, Savings"
+                  value={accNote}
+                  onChange={(e) => setAccNote(e.target.value)}
+                  className={styles.formInput}
                 />
               </div>
 
