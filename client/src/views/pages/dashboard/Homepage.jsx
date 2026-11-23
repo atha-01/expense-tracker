@@ -310,8 +310,8 @@ export default function HomePage() {
           </button>
         </div>
 
-        <div className={styles.accountsRowContainer}>
-          {/* Pinned Total Net Worth Card (Always Visible) */}
+<div className={styles.accountsRowContainer}>
+          {/* Pinned Total Net Worth Card (Casts a shadow over sliding cards) */}
           <div className={styles.netWorthCard}>
             <div className={styles.netWorthTop}>
               <span className={styles.netWorthLabel}>Total Net Worth</span>
@@ -322,52 +322,55 @@ export default function HomePage() {
               {accounts.length} {accounts.length === 1 ? 'Account' : 'Accounts'} Active
             </span>
           </div>
-
-          {/* Horizontally Scrollable Account Cards */}
-          <div className={styles.accountsScrollTrack}>
-            {accounts.length === 0 ? (
-              <div className={styles.emptyAccountsPrompt}>
-                <span>No accounts yet. Click <strong>"Add Money / Account"</strong> to get started!</span>
-              </div>
-            ) : (
-              accounts.map((acc) => {
-                const bal = getAccountBalance(acc);
-                return (
-                  <div key={acc.id || acc._id} className={styles.accountCard}>
-                    <div className={styles.accCardTop}>
-                      <div className={styles.accTypeBadge}>
-                        {renderAccountTypeIcon(acc.type)}
+          {/* Horizontally Scrollable Track with Edge Fade Shadows */}
+          <div className={styles.scrollWrapper}>
+            {/* Left fade shadow (under the Net Worth card) */}
+            <div className={styles.leftFadeOverlay} />
+            <div className={styles.accountsScrollTrack}>
+              {accounts.length === 0 ? (
+                <div className={styles.emptyAccountsPrompt}>
+                  <span>No accounts yet. Click <strong>"Add Money / Account"</strong> to get started!</span>
+                </div>
+              ) : (
+                accounts.map((acc) => {
+                  const bal = getAccountBalance(acc);
+                  return (
+                    <div key={acc.id || acc._id} className={styles.accountCard}>
+                      <div className={styles.accCardTop}>
+                        <div className={styles.accTypeBadge}>
+                          {renderAccountTypeIcon(acc.type)}
+                        </div>
+                        
+                        <div className={styles.accActions}>
+                          <button
+                            type="button"
+                            className={styles.accActionBtn}
+                            onClick={() => openEditModal(acc)}
+                            title="Edit Account"
+                          >
+                            <PencilSquareIcon className={styles.actionSvg} />
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.accActionBtnDanger}
+                            onClick={() => handleDeleteAccount(acc.id || acc._id, acc.name)}
+                            title="Delete Account"
+                          >
+                            <TrashIcon className={styles.actionSvg} />
+                          </button>
+                        </div>
                       </div>
-                      
-                      {/* Action buttons: Edit & Delete */}
-                      <div className={styles.accActions}>
-                        <button
-                          type="button"
-                          className={styles.accActionBtn}
-                          onClick={() => openEditModal(acc)}
-                          title="Edit Account"
-                        >
-                          <PencilSquareIcon className={styles.actionSvg} />
-                        </button>
-                        <button
-                          type="button"
-                          className={styles.accActionBtnDanger}
-                          onClick={() => handleDeleteAccount(acc.id || acc._id, acc.name)}
-                          title="Delete Account"
-                        >
-                          <TrashIcon className={styles.actionSvg} />
-                        </button>
-                      </div>
+                      <h4 className={styles.accName} title={acc.name}>{acc.name}</h4>
+                      <p className={`${styles.accBalance} ${bal < 0 ? styles.negativeBal : ''}`}>
+                        ₹{bal.toLocaleString()}
+                      </p>
                     </div>
-
-                    <h4 className={styles.accName} title={acc.name}>{acc.name}</h4>
-                    <p className={`${styles.accBalance} ${bal < 0 ? styles.negativeBal : ''}`}>
-                      ₹{bal.toLocaleString()}
-                    </p>
-                  </div>
-                );
-              })
-            )}
+                  );
+                })
+              )}
+            </div>
+            {/* Right fade shadow (indicates more scrollable content) */}
+            <div className={styles.rightFadeOverlay} />
           </div>
         </div>
       </section>
