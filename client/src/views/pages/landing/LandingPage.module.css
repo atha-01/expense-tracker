@@ -8,24 +8,39 @@
   overflow-x: hidden;
 }
 
-/* Background Finance / Cash Atmosphere Overlay */
-.bgOverlay {
-  position: fixed;
+/* Crisp Ambient Tech Glow & Grid */
+.ambientGlow {
+  position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 520px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.16) 0%, rgba(16, 185, 129, 0.06) 50%, transparent 75%);
+  filter: blur(100px);
   pointer-events: none;
   z-index: 0;
-  background-image: 
-    radial-gradient(circle at 50% 15%, rgba(59, 130, 246, 0.15), transparent 45%),
-    radial-gradient(circle at 80% 30%, rgba(16, 185, 129, 0.12), transparent 40%),
-    radial-gradient(circle at 20% 70%, rgba(59, 130, 246, 0.08), transparent 50%),
-    url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?q=80&w=2071&auto=format&fit=crop');
-  background-size: cover;
-  background-position: center;
-  opacity: 0.07;
-  filter: grayscale(80%);
+}
+
+:global([data-theme='light']) .ambientGlow {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(16, 185, 129, 0.03) 50%, transparent 75%);
+  filter: blur(80px);
+}
+
+.gridOverlay {
+  position: absolute;
+  inset: 0;
+  height: 900px;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+:global([data-theme='light']) .gridOverlay {
+  background-image: radial-gradient(rgba(100, 116, 139, 0.14) 1px, transparent 1px);
 }
 
 /* HeroUI Pro Floating Pill Navbar */
@@ -36,7 +51,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 18px 24px 10px 24px;
+  padding: 16px 24px 8px 24px;
 }
 
 .floatingNavbar {
@@ -44,40 +59,41 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 900px;
-  padding: 8px 14px 8px 18px;
+  max-width: 920px;
+  padding: 8px 16px;
   border-radius: 9999px;
-  background-color: rgba(19, 26, 41, 0.82);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  transition: all 0.2s ease;
+  background-color: rgba(15, 17, 23, 0.88);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  transition: all 0.25s ease;
 }
 
-/* In light theme, make the floating navbar clean frosted white */
 :global([data-theme='light']) .floatingNavbar {
-  background-color: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.12);
+  background-color: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.03);
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
+  user-select: none;
 }
 
 .brandLogoBox {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background-color: var(--primary);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
-  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 }
 
 .brandIcon {
@@ -86,9 +102,10 @@
 }
 
 .brandName {
-  font-size: 1.05rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
 }
 
@@ -96,35 +113,46 @@
 .navLinks {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .navLink {
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 9999px;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 500;
   color: var(--text-secondary);
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
 }
 
 .navLink:hover {
   color: var(--text-primary);
-  background-color: rgba(255, 255, 255, 0.06);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 :global([data-theme='light']) .navLink:hover {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-/* Nav Right */
+.activeNavLink {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.12);
+}
+
+:global([data-theme='light']) .activeNavLink {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
+/* Nav Right Actions */
 .navRight {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
-.themeToggleBtn {
+.iconActionBtn {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,12 +160,17 @@
   height: 36px;
   border-radius: 50%;
   color: var(--text-secondary);
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
 }
 
-.themeToggleBtn:hover {
+.iconActionBtn:hover {
   color: var(--text-primary);
   background-color: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+
+:global([data-theme='light']) .iconActionBtn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .navIcon {
@@ -145,13 +178,24 @@
   height: 18px;
 }
 
+.notificationDot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
+}
+
 .loginBtn {
-  padding: 7px 14px;
+  padding: 6px 14px;
   border-radius: 9999px;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-secondary);
-  transition: color 0.15s ease;
+  transition: color 0.18s ease;
 }
 
 .loginBtn:hover {
@@ -159,29 +203,29 @@
 }
 
 .signUpPill {
-  padding: 8px 18px;
+  padding: 7px 18px;
   border-radius: 9999px;
-  background-color: var(--primary);
-  color: white;
-  font-size: 0.85rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-size: 0.88rem;
   font-weight: 600;
   box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .signUpPill:hover {
-  background-color: var(--primary-hover);
   transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.45);
 }
 
-/* Hero Section */
+/* Main Hero Section */
 .heroSection {
   position: relative;
   z-index: 10;
-  max-width: 900px;
+  max-width: 960px;
   width: 100%;
   margin: 0 auto;
-  padding: 60px 24px 90px 24px;
+  padding: 64px 24px 100px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -189,12 +233,11 @@
   flex: 1;
 }
 
-/* HeroUI Pill Chip */
 .heroChip {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 14px;
+  padding: 6px 16px;
   border-radius: 9999px;
   background-color: rgba(59, 130, 246, 0.1);
   border: 1px solid rgba(59, 130, 246, 0.25);
@@ -206,16 +249,16 @@
 }
 
 .chipSparkle {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
 }
 
 .headline {
-  font-size: 3.25rem;
+  font-size: 3.5rem;
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.03em;
-  margin-bottom: 20px;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  margin-bottom: 22px;
 }
 
 .gradientHeading {
@@ -231,11 +274,11 @@
 }
 
 .subheadline {
-  font-size: 1.15rem;
+  font-size: 1.18rem;
   color: var(--text-secondary);
   line-height: 1.6;
-  max-width: 660px;
-  margin-bottom: 38px;
+  max-width: 680px;
+  margin-bottom: 40px;
   font-weight: 400;
 }
 
@@ -244,7 +287,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 75px;
+  margin-bottom: 72px;
   flex-wrap: wrap;
   justify-content: center;
 }
@@ -255,7 +298,7 @@
   gap: 10px;
   padding: 14px 30px;
   border-radius: 9999px;
-  background-color: var(--primary);
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   color: white;
   font-size: 1rem;
   font-weight: 700;
@@ -264,9 +307,8 @@
 }
 
 .primaryPillBtn:hover {
-  background-color: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(59, 130, 246, 0.45);
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.45);
 }
 
 .btnArrow {
@@ -275,7 +317,7 @@
 }
 
 .secondaryPillBtn {
-  padding: 14px 26px;
+  padding: 14px 28px;
   border-radius: 9999px;
   font-size: 0.95rem;
   color: var(--text-secondary);
@@ -294,11 +336,11 @@
   color: var(--primary);
 }
 
-/* HeroUI Frosted Glass Cards */
+/* HeroUI Frosted Glass Feature Cards */
 .featureGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 22px;
   width: 100%;
 }
 
@@ -308,29 +350,30 @@
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  padding: 26px;
+  padding: 28px;
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   transition: all 0.25s ease;
 }
 
 :global([data-theme='light']) .heroCard {
   background-color: rgba(255, 255, 255, 0.85);
   border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.06);
 }
 
 .heroCard:hover {
   transform: translateY(-4px);
   border-color: rgba(59, 130, 246, 0.4);
-  box-shadow: 0 12px 30px -10px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 16px 36px -10px rgba(59, 130, 246, 0.2);
 }
 
 .cardIconWrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -361,15 +404,17 @@
 }
 
 .cardTitle {
-  font-size: 1.05rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.12rem;
   font-weight: 700;
   color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
 .cardDescription {
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   color: var(--text-secondary);
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 /* Footer */
@@ -381,7 +426,7 @@
 }
 
 .footerContent {
-  max-width: 900px;
+  max-width: 960px;
   margin: 0 auto;
   display: flex;
   align-items: center;

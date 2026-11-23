@@ -1,5 +1,4 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../../controllers/ThemeContext';
 import {
@@ -11,20 +10,23 @@ import {
   ClockIcon,
   BuildingLibraryIcon,
   SparklesIcon,
-  ChartBarIcon,
+  MagnifyingGlassIcon,
+  BellIcon,
 } from '@heroicons/react/24/outline';
 import styles from './LandingPage.module.css';
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
+  const [activeNav, setActiveNav] = useState('features');
 
   function goToAuth(mode) {
     navigate('/login', { state: { mode: mode } });
   }
 
-  function scrollToSection(id) {
-    const el = document.getElementById(id);
+  function handleNavClick(sectionId) {
+    setActiveNav(sectionId);
+    const el = document.getElementById(sectionId);
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
@@ -33,15 +35,16 @@ export default function LandingPage() {
   return (
     <div className={styles.landingContainer}>
 
-      {/* Ambient Animated Cash / Finance Backdrop */}
-      <div className={styles.bgOverlay} />
+      {/* Subtle Ambient Tech Spotlight & Grid (Clean, Modern, No Blobs) */}
+      <div className={styles.ambientGlow} />
+      <div className={styles.gridOverlay} />
 
       {/* HeroUI Pro Floating Pill Navbar */}
       <header className={styles.headerWrapper}>
         <nav className={styles.floatingNavbar}>
           
-          {/* Left: Brand */}
-          <div className={styles.brand}>
+          {/* Left: Brand Identity */}
+          <div className={styles.brand} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <div className={styles.brandLogoBox}>
               <WalletIcon className={styles.brandIcon} />
             </div>
@@ -50,24 +53,54 @@ export default function LandingPage() {
 
           {/* Center: Navigation Links */}
           <div className={styles.navLinks}>
-            <button className={styles.navLink} onClick={() => scrollToSection('features')}>
+            <button
+              className={`${styles.navLink} ${activeNav === 'features' ? styles.activeNavLink : ''}`}
+              onClick={() => handleNavClick('features')}
+            >
               Features
             </button>
-            <button className={styles.navLink} onClick={() => scrollToSection('budgeting')}>
+            <button
+              className={`${styles.navLink} ${activeNav === 'budgeting' ? styles.activeNavLink : ''}`}
+              onClick={() => handleNavClick('budgeting')}
+            >
               Budgeting
             </button>
-            <button className={styles.navLink} onClick={() => scrollToSection('bills')}>
+            <button
+              className={`${styles.navLink} ${activeNav === 'bills' ? styles.activeNavLink : ''}`}
+              onClick={() => handleNavClick('bills')}
+            >
               Bills Radar
             </button>
-            <button className={styles.navLink} onClick={() => scrollToSection('accounts')}>
+            <button
+              className={`${styles.navLink} ${activeNav === 'accounts' ? styles.activeNavLink : ''}`}
+              onClick={() => handleNavClick('accounts')}
+            >
               Accounts
             </button>
           </div>
 
-          {/* Right: Theme Toggle & Auth Buttons */}
+          {/* Right: Search, Notifications, Theme & Auth */}
           <div className={styles.navRight}>
+            
             <button
-              className={styles.themeToggleBtn}
+              className={styles.iconActionBtn}
+              title="Search"
+              onClick={() => goToAuth('login')}
+            >
+              <MagnifyingGlassIcon className={styles.navIcon} />
+            </button>
+
+            <button
+              className={styles.iconActionBtn}
+              title="Notifications"
+              onClick={() => goToAuth('login')}
+            >
+              <BellIcon className={styles.navIcon} />
+              <span className={styles.notificationDot} />
+            </button>
+
+            <button
+              className={styles.iconActionBtn}
               onClick={toggleTheme}
               title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
             >
@@ -85,21 +118,22 @@ export default function LandingPage() {
             <button className={styles.signUpPill} onClick={() => goToAuth('register')}>
               Sign Up
             </button>
+
           </div>
 
         </nav>
       </header>
 
-      {/* Hero Section */}
+      {/* Main Hero Section */}
       <main className={styles.heroSection}>
 
-        {/* HeroUI Chip Badge */}
+        {/* HeroUI Pill Chip */}
         <div className={styles.heroChip}>
           <SparklesIcon className={styles.chipSparkle} />
           <span>Personal Finance, Simplified</span>
         </div>
 
-        {/* Punchline Headline */}
+        {/* High-Impact Punchline */}
         <h1 className={styles.headline}>
           Managing expenses can be troublesome.
           <br />
@@ -110,7 +144,7 @@ export default function LandingPage() {
           Take full control of every rupee. Track daily spending, anticipate upcoming bills before they’re overdue, and protect your budget with confidence — all in one modern dashboard.
         </p>
 
-        {/* Call-to-Action Group */}
+        {/* Action Buttons */}
         <div className={styles.ctaGroup}>
           <button className={styles.primaryPillBtn} onClick={() => goToAuth('register')}>
             <span>Create Account — It's Free</span>
@@ -122,7 +156,7 @@ export default function LandingPage() {
           </button>
         </div>
 
-        {/* HeroUI Glassmorphic Feature Cards Grid */}
+        {/* HeroUI Frosted Glass Feature Cards Grid */}
         <div id="features" className={styles.featureGrid}>
 
           <div className={styles.heroCard} id="budgeting">
@@ -131,7 +165,7 @@ export default function LandingPage() {
             </div>
             <h3 className={styles.cardTitle}>Smart Budget Health</h3>
             <p className={styles.cardDescription}>
-              Real-time financial speedometer calculates your safe daily burn rate and alerts you before you exceed your target.
+              Real-time financial pulse calculates your safe daily burn rate and alerts you before you exceed your target.
             </p>
           </div>
 
