@@ -55,6 +55,7 @@ export default function HomePage() {
     editAccount,
     deleteAccount,
     addTransaction,
+    
     monthlyBudget,
     saveBudget,
   } = useExpense();
@@ -104,7 +105,8 @@ export default function HomePage() {
     let balance = Number(account.openingBalance) || 0;
     for (let i = 0; i < validTransactions.length; i++) {
       const t = validTransactions[i];
-      if (t.account === account.id || t.account === account.type || t.account === account.name) {
+      // STRICT MATCHING: Only match by exact name or ID (no generic type bleed)
+      if (t.account === account.id || t.account === account.name) {
         if (t.type === 'income') {
           balance += Number(t.amount) || 0;
         } else {
@@ -112,13 +114,14 @@ export default function HomePage() {
         }
       }
     }
-    return balance;
+    return Math.max(0, balance);
   }
 
   let totalNetWorth = 0;
   for (let i = 0; i < accounts.length; i++) {
     totalNetWorth += getAccountBalance(accounts[i]);
   }
+  totalNetWorth = Math.max(0, totalNetWorth);
 
   function renderAccountTypeIcon(type) {
     const t = (type || '').toLowerCase();
@@ -161,31 +164,41 @@ export default function HomePage() {
   async function handleCreateAccount(e) {
     e.preventDefault();
     if (!accName.trim() || accBalance === '') return;
+    
     let finalName = accName.trim();
     if (accountCategory === 'bank' && bankSubtype) {
       finalName = `${finalName} (${bankSubtype})`;
     }
+    
     const amountNum = Number(accBalance) || 0;
     const selectedDate = accDate || new Date().toISOString().split('T')[0];
-    // 1. Create the account with 0 opening balance so the incoming transaction tracks it
-    await addAccount({
-      name: finalName,
-      type: accountCategory,
-      openingBalance: 0,
-    });
 
+    // Check if an account with this name ALREADY exists
+    const existing = accounts.find(
+      (a) => a.name.trim().toLowerCase() === finalName.toLowerCase()
+    );
 
-        // 2. Also log it as an Income Transaction so it appears in Recent Activity with its Date!
+    // 1. Only create a NEW card if it doesn't already exist!
+    if (!existing) {
+      await addAccount({
+        name: finalName,
+        type: accountCategory,
+        openingBalance: 0,
+      });
+    }
+
+    // 2. Deposit the money into that account (whether existing or new)
     if (amountNum > 0) {
       await addTransaction({
         type: 'income',
         amount: amountNum,
         category: 'salary',
-        account: finalName,
+        account: existing ? existing.name : finalName,
         date: selectedDate,
         note: accNote.trim() || `Deposit to ${finalName}`,
       });
     }
+
     setShowAddAccountModal(false);
   }
 
@@ -196,20 +209,39 @@ export default function HomePage() {
   const [editName, setEditName] = useState('');
   const [editBalance, setEditBalance] = useState('');
 
+  // Calculate net transactions specifically belonging to this account
+  function getAccountNetTransactions(account) {
+    let net = 0;
+    for (let i = 0; i < validTransactions.length; i++) {
+      const t = validTransactions[i];
+      if (t.account === account.id || t.account === account.name) {
+        if (t.type === 'income') net += Number(t.amount) || 0;
+        else if (t.type === 'expense') net -= Number(t.amount) || 0;
+      }
+    }
+    return net;
+  }
+
   function openEditModal(account) {
     setEditingAccount(account);
     setEditName(account.name);
-    setEditBalance(account.openingBalance);
+    // Pre-fill the edit box with the ACTUAL current balance
+    setEditBalance(getAccountBalance(account));
   }
 
   async function handleSaveEditAccount(e) {
     e.preventDefault();
     if (!editingAccount || !editName.trim() || editBalance === '') return;
 
+    const targetBalance = Number(editBalance) || 0;
+    const netTxs = getAccountNetTransactions(editingAccount);
+    // Setting openingBalance = targetBalance - netTxs guarantees the card shows EXACTLY targetBalance!
+    const newOpening = targetBalance - netTxs;
+
     await editAccount(editingAccount.id, {
       name: editName.trim(),
       type: editingAccount.type,
-      openingBalance: Number(editBalance) || 0,
+      openingBalance: newOpening,
     });
 
     setEditingAccount(null);
@@ -824,7 +856,7 @@ export default function HomePage() {
               </div>
 
               <div className={styles.formGroup}>
-                <label className={styles.formLabel}>Opening Balance (₹)</label>
+                <label className={styles.formLabel}>Current Balance (₹)</label>
                 <input
                   type="number"
                   value={editBalance}

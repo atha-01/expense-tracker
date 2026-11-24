@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-unused-vars */
 import{ createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
@@ -185,12 +183,16 @@ export function ExpenseProvider({ children }) {
     }
   }
 
-  async function updateBillStatus(id, newStatus) {
+  async function updateBillStatus(id, newStatus, newDueDate) {
     try {
+      const payload = { status: newStatus };
+      if (newDueDate) {
+        payload.dueDate = newDueDate;
+      }
       const response = await fetch('http://localhost:5000/api/bills/' + id, {
         method: 'PUT',
         headers: getAuthHeaders(),
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify(payload),
       });
       const updatedData = await response.json();
 

@@ -35,7 +35,9 @@ export async function updateBillStatus(req, res) {
     return res.status(401).json({ message: 'Not authorized' });
   }
 
-  bill.status = req.body.status;
+  if (req.body.status !== undefined) bill.status = req.body.status;
+  
+  if (req.body.dueDate !== undefined) bill.dueDate = req.body.dueDate;
   await bill.save();
 
   res.json(bill);

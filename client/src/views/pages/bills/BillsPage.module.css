@@ -45,6 +45,8 @@
   color: #ffffff;
   font-size: 0.88rem;
   font-weight: 600;
+  border: none;
+  cursor: pointer;
   box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -56,8 +58,11 @@
 }
 
 .plusSvg {
-  width: 18px;
-  height: 18px;
+  width: 18px !important;
+  height: 18px !important;
+  max-width: 18px !important;
+  max-height: 18px !important;
+  flex-shrink: 0;
 }
 
 /* ========================================================================== */
@@ -171,8 +176,9 @@
 }
 
 .billIconSvg {
-  width: 18px;
-  height: 18px;
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0;
 }
 
 .billTitle {
@@ -199,9 +205,10 @@
 }
 
 .dateSvg {
-  width: 15px;
-  height: 15px;
+  width: 15px !important;
+  height: 15px !important;
   color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
 .dateText {
@@ -221,8 +228,9 @@
 }
 
 .badgeSvg {
-  width: 14px;
-  height: 14px;
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0;
 }
 
 .badgePaid {
@@ -262,6 +270,7 @@
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
   background-color: transparent;
+  cursor: pointer;
   transition: all 0.15s ease;
 }
 
@@ -270,10 +279,20 @@
   color: var(--income-green);
 }
 
-.paidActive {
-  background-color: var(--income-bg) !important;
-  color: var(--income-green) !important;
-  border-color: rgba(16, 185, 129, 0.3) !important;
+/* 1. Unresponsive, non-clickable Paid badge pill */
+.paidBadgePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background-color: var(--income-bg);
+  color: var(--income-green);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  cursor: default;
+  user-select: none;
 }
 
 .deleteBtn {
@@ -283,7 +302,10 @@
   width: 30px;
   height: 30px;
   border-radius: 8px;
+  border: none;
+  background: transparent;
   color: var(--text-secondary);
+  cursor: pointer;
   transition: all 0.15s ease;
 }
 
@@ -293,8 +315,9 @@
 }
 
 .trashSvg {
-  width: 16px;
-  height: 16px;
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0;
 }
 
 .emptyTd {
@@ -323,6 +346,7 @@
   color: var(--text-primary);
   font-size: 0.82rem;
   font-weight: 600;
+  cursor: pointer;
   transition: all 0.15s ease;
 }
 
@@ -335,8 +359,11 @@
 }
 
 .chevron {
-  width: 14px;
-  height: 14px;
+  width: 14px !important;
+  height: 14px !important;
+  max-width: 14px !important;
+  max-height: 14px !important;
+  flex-shrink: 0;
   transition: transform 0.2s ease;
 }
 
@@ -380,8 +407,9 @@
 }
 
 .checkSvg {
-  width: 14px;
-  height: 14px;
+  width: 14px !important;
+  height: 14px !important;
+  flex-shrink: 0;
 }
 
 /* Sortable Date Header */
@@ -394,6 +422,9 @@
   color: var(--text-secondary);
   font-size: 0.82rem;
   font-weight: 600;
+  background: transparent;
+  border: none;
+  cursor: pointer;
   transition: all 0.15s ease;
 }
 
@@ -402,14 +433,69 @@
   background-color: rgba(255, 255, 255, 0.06);
 }
 
+:global([data-theme='light']) .sortableHeaderBtn:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
 .sortSvg {
-  width: 14px;
-  height: 14px;
+  width: 14px !important;
+  height: 14px !important;
   color: var(--primary);
+  flex-shrink: 0;
+}
+
+/* Next Cycle & Limit Badges */
+.nextCycleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 9999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--primary);
+  background-color: rgba(59, 130, 246, 0.08);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nextCycleBtn:hover {
+  background-color: var(--primary);
+  color: #ffffff;
+}
+
+.advanceLimitBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  user-select: none;
+}
+
+:global([data-theme='light']) .advanceLimitBadge {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.disabledPaidBtn {
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  background-color: transparent;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 /* ========================================================================== */
-/* Translucent Frosted Glass Modal                                           */
+/* Modals Common                                                             */
 /* ========================================================================== */
 .modalOverlay {
   position: fixed;
@@ -422,34 +508,34 @@
   justify-content: center;
   z-index: 250;
   padding: 20px;
-  animation: fadeIn 0.15s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 .modalContent {
-  width: 100%;
-  max-width: 440px;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.6);
-  animation: scaleUp 0.15s ease-out;
+  padding: 28px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+  animation: modalEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes scaleUp {
-  from { transform: scale(0.96); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 .modalHeader {
   display: flex;
-  align-items: flex-start;
   justify-content: space-between;
+  align-items: flex-start;
   margin-bottom: 20px;
 }
 
@@ -458,7 +544,7 @@
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .modalSub {
@@ -467,17 +553,24 @@
 }
 
 .closeBtn {
+  background: transparent;
+  border: none;
   color: var(--text-secondary);
-  transition: color 0.15s ease;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
 .closeBtn:hover {
   color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.08);
 }
 
 .closeIcon {
-  width: 20px;
-  height: 20px;
+  width: 20px !important;
+  height: 20px !important;
+  flex-shrink: 0;
 }
 
 .modalForm {
@@ -532,21 +625,6 @@
   color: #0f172a;
 }
 
-.formInput[type='date']::-webkit-calendar-picker-indicator {
-  filter: invert(0.85);
-  cursor: pointer;
-}
-
-:global([data-theme='light']) .formInput[type='date']::-webkit-calendar-picker-indicator {
-  filter: none;
-}
-
-.formError {
-  font-size: 0.84rem;
-  color: #ef4444;
-  font-weight: 500;
-}
-
 .modalActions {
   display: flex;
   justify-content: flex-end;
@@ -561,6 +639,8 @@
   font-weight: 600;
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
+  background: transparent;
+  cursor: pointer;
 }
 
 .cancelBtn:hover {
@@ -574,10 +654,237 @@
   color: #ffffff;
   font-size: 0.86rem;
   font-weight: 600;
+  border: none;
   box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+  cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .submitBtn:hover {
   transform: translateY(-1px);
+}
+
+/* Pay Modal Summary & Checkbox */
+.paySummaryCard {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+:global([data-theme='light']) .paySummaryCard {
+  background-color: #f1f5f9;
+}
+
+.paySummaryInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.payBillName {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.payDueDate {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.payAmountBadge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.checkboxInput {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.insufficientAlert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.alertIcon {
+  width: 18px !important;
+  height: 18px !important;
+  flex-shrink: 0;
+}
+
+/* ========================================================================== */
+/* Delete Bill & Targeted Refund Modal                                       */
+/* ========================================================================== */
+.deleteModalHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.deleteIconBadge {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.deleteTrashSvg {
+  width: 22px !important;
+  height: 22px !important;
+  flex-shrink: 0;
+}
+
+.refundSection {
+  margin-bottom: 18px;
+}
+
+.refundSectionHeader {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.txRefundList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.txRefundItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+
+:global([data-theme='light']) .txRefundItem {
+  background-color: #f8fafc;
+}
+
+.txRefundItem:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+.refundCheckbox {
+  width: 18px;
+  height: 18px;
+  accent-color: #10b981;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.txRefundInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.txRefundNote {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.txRefundMeta {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.txRefundAmount {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+.noRefundNotice {
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.protectedNotice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background-color: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  margin-bottom: 18px;
+}
+
+.protectedIcon {
+  width: 16px !important;
+  height: 16px !important;
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.deleteDangerBtn {
+  padding: 9px 22px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.deleteDangerBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.45);
 }
