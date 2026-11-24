@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 import React, { useState, useRef, useEffect } from 'react';
 import { useExpense } from '../../../controllers/ExpenseContext';
@@ -55,7 +56,7 @@ export default function HomePage() {
     editAccount,
     deleteAccount,
     addTransaction,
-    
+    deleteTransaction,
     monthlyBudget,
     saveBudget,
   } = useExpense();
@@ -247,8 +248,19 @@ export default function HomePage() {
     setEditingAccount(null);
   }
 
+  async function handleDeleteTransaction(id, note) {
+    if (window.confirm(`Delete transaction "${note || 'Transaction'}"?`)) {
+      await deleteTransaction(id);
+    }
+  }
+
   async function handleDeleteAccount(id, name) {
-    if (window.confirm(`Are you sure you want to remove "${name}" from your accounts?`)) {
+    if (window.confirm(`Are you sure you want to remove "${name}" and clean up its recorded transactions?`)) {
+      // Clean up any transactions linked to this deleted account
+      const linkedTxs = validTransactions.filter((t) => t.account === id || t.account === name);
+      for (let i = 0; i < linkedTxs.length; i++) {
+        await deleteTransaction(linkedTxs[i].id || linkedTxs[i]._id);
+      }
       await deleteAccount(id);
     }
   }
@@ -589,12 +601,13 @@ export default function HomePage() {
                   <th className={styles.thTransaction}>Transaction</th>
                   <th className={styles.thDate}>Date</th>
                   <th className={styles.thAmount}>Amount</th>
+                  <th className={styles.thAction}></th>
                 </tr>
               </thead>
               <tbody>
                 {displayTransactions.length === 0 ? (
                   <tr>
-                    <td colSpan="3" className={styles.emptyTd}>No transactions recorded.</td>
+                    <td colSpan="4" className={styles.emptyTd}>No transactions recorded.</td>
                   </tr>
                 ) : (
                   displayTransactions.map((item, index) => {
@@ -618,6 +631,16 @@ export default function HomePage() {
                           <span className={isIncome ? styles.amountIncome : styles.amountExpense}>
                             {isIncome ? `+₹${amountValue.toLocaleString()}` : `-₹${amountValue.toLocaleString()}`}
                           </span>
+                        </td>
+                        <td className={styles.tdAction}>
+                          <button
+                            type="button"
+                            className={styles.deleteTxBtn}
+                            onClick={() => handleDeleteTransaction(item.id || item._id, item.note || item.category)}
+                            title="Delete transaction"
+                          >
+                            <TrashIcon className={styles.trashSvg} />
+                          </button>
                         </td>
                       </tr>
                     );

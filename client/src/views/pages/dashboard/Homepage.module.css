@@ -577,16 +577,19 @@
 
 .thTransaction {
   text-align: left;
+  width: 48%;
 }
 
 .thDate {
   text-align: center;
+  width: 24%;
+  white-space: nowrap;
 }
-
 .thAmount {
   text-align: right;
+  width: 22%;
+  white-space: nowrap;
 }
-
 .tableRow {
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.15s ease;
@@ -649,27 +652,32 @@
 
 .tdDate {
   text-align: center;
+  white-space: nowrap;
 }
 
 .dateText {
   font-size: 0.82rem;
   color: var(--text-secondary);
+  white-space: nowrap;
 }
 
 .tdAmount {
   text-align: right;
+  white-space: nowrap;
 }
 
 .amountIncome {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--income-green);
+  white-space: nowrap;
 }
 
 .amountExpense {
   font-size: 0.95rem;
   font-weight: 700;
   color: var(--expense-red);
+  white-space: nowrap;
 }
 
 .emptyTd {
@@ -962,4 +970,35 @@
   .twoColumnGrid {
     grid-template-columns: 1fr;
   }
+}
+/* Recent Activity Delete Action Button */
+.thAction,
+.tdAction {
+  padding: 10px 14px 10px 0;
+  text-align: right;
+  width: 36px;
+}
+
+.deleteTxBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.deleteTxBtn:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.12);
+}
+
+.trashSvg {
+  width: 15px !important;
+  height: 15px !important;
 }
