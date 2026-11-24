@@ -4,170 +4,225 @@
   gap: 20px;
 }
 
-.summaryRow {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-}
-
-.summaryCard {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 16px 20px;
-}
-
-.summaryLabel {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 6px;
-}
-
-.summaryAmount {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.summaryCount {
-  font-size: 1.8rem;
-  font-weight: 700;
-}
-
-.green { color: var(--income-green); }
-.amber { color: var(--warning-amber); }
-.red   { color: var(--expense-red); }
-
-.card {
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 24px;
-}
-
-.cardTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 20px;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.field label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.field input,
-.field select {
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: 0.95rem;
-}
-
-.field input:focus,
-.field select:focus {
-  border-color: var(--primary);
-  outline: none;
-}
-
-.error {
-  color: var(--expense-red);
-  font-size: 0.85rem;
-}
-
-.submitBtn {
-  padding: 12px;
-  background-color: var(--primary);
-  color: white;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: opacity 0.2s;
-}
-
-.submitBtn:hover {
-  opacity: 0.85;
-}
-
-.empty {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  text-align: center;
-  padding: 24px 0;
-}
-
-.billRow {
+/* ========================================================================== */
+/* Top Header Bar                                                            */
+/* ========================================================================== */
+.headerRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border-color);
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
-.billRow:last-child {
-  border-bottom: none;
+.pageTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
 }
 
-.billLeft {
-  flex: 1;
+.pageSub {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
 }
 
-.billName {
-  font-size: 0.95rem;
-  font-weight: 500;
+.pageSub strong {
   color: var(--text-primary);
 }
 
-.billMeta {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-top: 2px;
+.overdueAlert {
+  color: #ef4444;
+  font-weight: 600;
 }
 
-.billRight {
+.addBillPillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.addBillPillBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.45);
+}
+
+.plusSvg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ========================================================================== */
+/* Main Bills Table Card                                                     */
+/* ========================================================================== */
+.tableCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tableWrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thName,
+.thDate,
+.thStatus,
+.thAmount,
+.thActions {
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.thName {
+  text-align: left;
+}
+
+.thDate {
+  text-align: center;
+}
+
+.thStatus {
+  text-align: left;
+}
+
+.thAmount {
+  text-align: right;
+}
+
+.thActions {
+  text-align: right;
+}
+
+.tableRow {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s ease;
+}
+
+.tableRow:hover {
+  background-color: rgba(255, 255, 255, 0.025);
+}
+
+:global([data-theme='light']) .tableRow:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.tdName,
+.tdDate,
+.tdStatus,
+.tdAmount,
+.tdActions {
+  padding: 14px;
+}
+
+.tdDate {
+  text-align: center;
+}
+
+.tdAmount {
+  text-align: right;
+}
+
+.tdActions {
+  text-align: right;
+}
+
+/* Bill Title Cell */
+.billCell {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 12px;
 }
 
-.billAmount {
+.billIconBadge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: rgba(59, 130, 246, 0.12);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.billIconSvg {
+  width: 18px;
+  height: 18px;
+}
+
+.billTitle {
+  font-size: 0.94rem;
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 1rem;
+  margin-bottom: 2px;
 }
 
-.badge {
-  font-size: 0.75rem;
-  font-weight: 600;
+.repeatBadge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Due Date Cell */
+.dateCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dateSvg {
+  width: 15px;
+  height: 15px;
+  color: var(--text-secondary);
+}
+
+.dateText {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* Status Badges */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badgeSvg {
+  width: 14px;
+  height: 14px;
 }
 
 .badgePaid {
@@ -181,56 +236,348 @@
 }
 
 .badgeOverdue {
-  background-color: var(--expense-bg);
-  color: var(--expense-red);
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
 }
 
-.toggleBtn {
-  font-size: 0.8rem;
-  font-weight: 500;
-  padding: 5px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  background-color: var(--bg-primary);
-  transition: background-color 0.15s;
-}
-
-.toggleBtn:hover {
-  background-color: var(--bg-surface-hover);
+.amountText {
+  font-size: 0.98rem;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
-.deleteBtn {
-  font-size: 1rem;
-  padding: 4px 8px;
-  border-radius: 6px;
+/* Actions Group */
+.actionGroup {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.togglePaidBtn {
+  padding: 5px 12px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--border-color);
   color: var(--text-secondary);
-  transition: background-color 0.15s;
+  background-color: transparent;
+  transition: all 0.15s ease;
+}
+
+.togglePaidBtn:hover {
+  border-color: var(--income-green);
+  color: var(--income-green);
+}
+
+.paidActive {
+  background-color: var(--income-bg) !important;
+  color: var(--income-green) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
 }
 
 .deleteBtn:hover {
-  background-color: var(--expense-bg);
-  color: var(--expense-red);
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.14);
 }
 
-@media (max-width: 768px) {
-  .summaryRow {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.trashSvg {
+  width: 16px;
+  height: 16px;
 }
 
-@media (max-width: 480px) {
-  .summaryRow {
-    grid-template-columns: 1fr 1fr;
-  }
+.emptyTd {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
 
-  .row {
-    grid-template-columns: 1fr;
-  }
+/* ========================================================================== */
+/* Filter Dropdown & Date Sort Header                                        */
+/* ========================================================================== */
+.filterWrapper {
+  position: relative;
+  display: inline-block;
+}
 
-  .billRight {
-    width: 100%;
-    justify-content: flex-start;
-  }
+.filterTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+:global([data-theme='light']) .filterTrigger {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.filterTrigger:hover {
+  border-color: var(--primary);
+}
+
+.chevron {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.filterMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  min-width: 150px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  padding: 6px;
+}
+
+.filterItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterItem:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
+}
+
+.filterActive {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.checkSvg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Sortable Date Header */
+.sortableHeaderBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.sortableHeaderBtn:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.sortSvg {
+  width: 14px;
+  height: 14px;
+  color: var(--primary);
+}
+
+/* ========================================================================== */
+/* Translucent Frosted Glass Modal                                           */
+/* ========================================================================== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 250;
+  padding: 20px;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.6);
+  animation: scaleUp 0.15s ease-out;
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.modalTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.modalSub {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.closeBtn {
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.closeBtn:hover {
+  color: var(--text-primary);
+}
+
+.closeIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.formInput,
+.formSelect {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+:global([data-theme='light']) .formInput,
+:global([data-theme='light']) .formSelect {
+  background-color: #ffffff;
+}
+
+.formInput:focus,
+.formSelect:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.formSelect option {
+  background-color: #131a29;
+  color: #f8fafc;
+  padding: 10px;
+}
+
+:global([data-theme='light']) .formSelect option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+.formInput[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+  cursor: pointer;
+}
+
+:global([data-theme='light']) .formInput[type='date']::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
+.formError {
+  font-size: 0.84rem;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancelBtn {
+  padding: 9px 18px;
+  border-radius: 9999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.cancelBtn:hover {
+  color: var(--text-primary);
+}
+
+.submitBtn {
+  padding: 9px 22px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+  transition: all 0.2s ease;
+}
+
+.submitBtn:hover {
+  transform: translateY(-1px);
 }

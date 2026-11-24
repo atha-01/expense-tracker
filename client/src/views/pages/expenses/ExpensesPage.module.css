@@ -4,254 +4,544 @@
   gap: 20px;
 }
 
-.banner {
-  background-color: var(--expense-bg);
-  border: 1px solid var(--expense-red);
-  border-radius: 12px;
-  padding: 20px 24px;
-}
-
-.bannerHeader {
+/* ========================================================================== */
+/* Top Header Bar                                                            */
+/* ========================================================================== */
+.headerRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 4px;
 }
 
-.bannerLabel {
-  font-size: 0.85rem;
-  color: var(--expense-red);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.bannerIcon {
-  width: 24px;
-  height: 24px;
-  color: var(--expense-red);
-}
-
-.bannerAmount {
-  font-size: 2rem;
+.pageTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
   font-weight: 700;
-  color: var(--expense-red);
+  color: var(--text-primary);
+  margin-bottom: 2px;
 }
 
-.card {
+.pageSub {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+}
+
+.pageSub strong {
+  color: var(--text-primary);
+}
+
+.logExpenseBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.logExpenseBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(239, 68, 68, 0.45);
+}
+
+.plusSvg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ========================================================================== */
+/* Main Expenses Table Card                                                  */
+/* ========================================================================== */
+.tableCard {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tableWrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thCategory,
+.thAccount,
+.thDate,
+.thAmount,
+.thActions {
+  padding: 12px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.thCategory {
+  text-align: left;
+}
+
+.thAccount {
+  text-align: left;
+}
+
+.thDate {
+  text-align: center;
+}
+
+.thAmount {
+  text-align: right;
+}
+
+.thActions {
+  text-align: right;
+}
+
+.tableRow {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.15s ease;
+}
+
+.tableRow:hover {
+  background-color: rgba(255, 255, 255, 0.025);
+}
+
+:global([data-theme='light']) .tableRow:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.tdCategory,
+.tdAccount,
+.tdDate,
+.tdAmount,
+.tdActions {
+  padding: 14px;
+}
+
+.tdDate {
+  text-align: center;
+}
+
+.tdAmount {
+  text-align: right;
+}
+
+.tdActions {
+  text-align: right;
+}
+
+/* Category & Title Cell */
+.categoryCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.categoryBadge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: rgba(239, 68, 68, 0.14);
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.badgeSvg {
+  width: 18px;
+  height: 18px;
+}
+
+.itemTitle {
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.itemCategorySub {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+/* Account Pill Badge */
+.accountPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+:global([data-theme='light']) .accountPill {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.pillSvg {
+  width: 14px;
+  height: 14px;
+  color: var(--primary);
+}
+
+.dateText {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.amountText {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+/* Actions Group */
+.actionGroup {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.actionBtn,
+.actionBtnDanger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+}
+
+.actionBtn {
+  color: var(--text-secondary);
+}
+
+.actionBtn:hover {
+  color: var(--primary);
+  background-color: rgba(59, 130, 246, 0.12);
+}
+
+.actionBtnDanger {
+  color: var(--text-secondary);
+}
+
+.actionBtnDanger:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.14);
+}
+
+.actionSvg {
+  width: 16px;
+  height: 16px;
+}
+
+.emptyTd {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ========================================================================== */
+/* Category Dropdown Filter & Date Sort Button                               */
+/* ========================================================================== */
+.filterWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.filterTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+:global([data-theme='light']) .filterTrigger {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.filterTrigger:hover {
+  border-color: var(--primary);
+}
+
+.chevron {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.filterMenu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  min-width: 180px;
+  max-height: 280px;
+  overflow-y: auto;
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 24px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+  padding: 6px;
+  scrollbar-width: none;
 }
 
-.cardTitle {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 20px;
-}
-
-.formHeader {
+.filterItem {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.filterItem:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--primary);
+}
+
+.filterActive {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.checkSvg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Sortable Date Header */
+.sortableHeaderBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.sortableHeaderBtn:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.sortSvg {
+  width: 14px;
+  height: 14px;
+  color: var(--primary);
+}
+
+/* ========================================================================== */
+/* Translucent Frosted Glass Modal                                           */
+/* ========================================================================== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 250;
+  padding: 20px;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  width: 100%;
+  max-width: 460px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 24px 50px -10px rgba(0, 0, 0, 0.6);
+  animation: scaleUp 0.15s ease-out;
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 
-.form {
+.modalTitle {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.modalSub {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.closeBtn {
+  color: var(--text-secondary);
+  transition: color 0.15s ease;
+}
+
+.closeBtn:hover {
+  color: var(--text-primary);
+}
+
+.closeIcon {
+  width: 20px;
+  height: 20px;
+}
+
+.modalForm {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.field {
+.formGroup {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.field label {
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.field input {
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-  font-size: 0.95rem;
-}
-
-.field input:focus {
-  border-color: var(--expense-red);
-  outline: none;
-}
-
-.error {
-  color: var(--expense-red);
-  font-size: 0.85rem;
-}
-
-.submitBtn {
-  padding: 12px;
-  background-color: var(--expense-red);
-  color: white;
-  border-radius: 8px;
-  font-size: 0.95rem;
+.formLabel {
+  font-size: 0.82rem;
   font-weight: 600;
-  transition: opacity 0.2s;
-}
-
-.submitBtn:hover {
-  opacity: 0.85;
-}
-
-.cancelBtn {
-  font-size: 0.85rem;
   color: var(--text-secondary);
-  border: 1px solid var(--border-color);
-  padding: 6px 12px;
-  border-radius: 6px;
-  transition: all 0.15s;
 }
 
-.cancelBtn:hover {
-  background-color: var(--bg-surface-hover);
-  color: var(--text-primary);
-}
-
-.empty {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  text-align: center;
-  padding: 24px 0;
-}
-
-/* History rows */
-.listRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.listRow:last-child {
-  border-bottom: none;
-}
-
-.itemLeft {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-/* Category badge */
-.categoryBadge {
-  width: 42px;
-  height: 42px;
+.formInput,
+.formSelect {
+  padding: 10px 14px;
   border-radius: 10px;
-  background-color: var(--expense-bg);
-  color: var(--expense-red);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.badgeSvg {
-  width: 22px;
-  height: 22px;
-}
-
-.titleRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.itemCategory {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-/* Account pill tag */
-.accountPill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background-color: var(--bg-primary);
+  background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-}
-
-.pillSvg {
-  width: 13px;
-  height: 13px;
-}
-
-.itemMeta {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-top: 3px;
-}
-
-.itemRight {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.itemAmount {
-  font-weight: 600;
-  color: var(--expense-red);
-  font-size: 1.05rem;
-  margin-right: 4px;
-}
-
-/* Action button icons */
-.actionBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  color: var(--text-secondary);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  outline: none;
   transition: all 0.15s ease;
 }
 
-.actionBtn:hover {
-  background-color: var(--bg-surface-hover);
+:global([data-theme='light']) .formInput,
+:global([data-theme='light']) .formSelect {
+  background-color: #ffffff;
+}
+
+.formInput:focus,
+.formSelect:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.formSelect option {
+  background-color: #131a29;
+  color: #f8fafc;
+  padding: 10px;
+}
+
+:global([data-theme='light']) .formSelect option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+.formInput[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.85);
+  cursor: pointer;
+}
+
+:global([data-theme='light']) .formInput[type='date']::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
+.formError {
+  font-size: 0.84rem;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cancelBtn {
+  padding: 9px 18px;
+  border-radius: 9999px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.cancelBtn:hover {
   color: var(--text-primary);
 }
 
-.deleteHover:hover {
-  background-color: var(--expense-bg);
-  color: var(--expense-red);
+.submitBtn {
+  padding: 9px 22px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.35);
+  transition: all 0.2s ease;
 }
 
-.actionSvg {
-  width: 18px;
-  height: 18px;
-}
-
-@media (max-width: 600px) {
-  .row {
-    grid-template-columns: 1fr;
-  }
+.submitBtn:hover {
+  transform: translateY(-1px);
 }
