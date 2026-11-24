@@ -248,21 +248,29 @@ export default function HomePage() {
     setEditingAccount(null);
   }
 
-  async function handleDeleteTransaction(id, note) {
-    if (window.confirm(`Delete transaction "${note || 'Transaction'}"?`)) {
-      await deleteTransaction(id);
-    }
+   // Custom Modal States for Deletion
+  const [deletingTransaction, setDeletingTransaction] = useState(null);
+  const [deletingAccount, setDeletingAccount] = useState(null);
+
+  async function confirmDeleteTransaction() {
+    if (!deletingTransaction) return;
+    const id = deletingTransaction.id || deletingTransaction._id;
+    await deleteTransaction(id);
+    setDeletingTransaction(null);
   }
 
-  async function handleDeleteAccount(id, name) {
-    if (window.confirm(`Are you sure you want to remove "${name}" and clean up its recorded transactions?`)) {
-      // Clean up any transactions linked to this deleted account
-      const linkedTxs = validTransactions.filter((t) => t.account === id || t.account === name);
-      for (let i = 0; i < linkedTxs.length; i++) {
-        await deleteTransaction(linkedTxs[i].id || linkedTxs[i]._id);
-      }
-      await deleteAccount(id);
+  async function confirmDeleteAccount() {
+    if (!deletingAccount) return;
+    const id = deletingAccount.id || deletingAccount._id;
+    const name = deletingAccount.name;
+
+    // Clean up any transactions linked to this deleted account
+    const linkedTxs = validTransactions.filter((t) => t.account === id || t.account === name);
+    for (let i = 0; i < linkedTxs.length; i++) {
+      await deleteTransaction(linkedTxs[i].id || linkedTxs[i]._id);
     }
+    await deleteAccount(id);
+    setDeletingAccount(null);
   }
 
   // --------------------------------------------------------------------------
@@ -414,7 +422,7 @@ export default function HomePage() {
                           <button
                             type="button"
                             className={styles.accActionBtnDanger}
-                            onClick={() => handleDeleteAccount(acc.id || acc._id, acc.name)}
+                            onClick={() => setDeletingAccount(acc)}
                             title="Delete Account"
                           >
                             <TrashIcon className={styles.actionSvg} />
@@ -636,7 +644,7 @@ export default function HomePage() {
                           <button
                             type="button"
                             className={styles.deleteTxBtn}
-                            onClick={() => handleDeleteTransaction(item.id || item._id, item.note || item.category)}
+                            onClick={() => setDeletingTransaction(item)}
                             title="Delete transaction"
                           >
                             <TrashIcon className={styles.trashSvg} />
@@ -952,6 +960,138 @@ export default function HomePage() {
           </div>
         </div>
       )}
+
+            {/* ==================================================================== */}
+      {/* 6. MODAL: DELETE TRANSACTION CONFIRMATION                            */}
+      {/* ==================================================================== */}
+      {deletingTransaction && (
+        <div className={styles.modalOverlay} onClick={() => setDeletingTransaction(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div>
+                <h3 className={styles.modalTitle}>Delete Transaction</h3>
+                <p className={styles.modalSub}>Are you sure you want to remove this record?</p>
+              </div>
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={() => setDeletingTransaction(null)}
+              >
+                <XMarkIcon className={styles.closeIcon} />
+              </button>
+            </div>
+
+            <div className={styles.deletePreviewCard}>
+              <div className={styles.previewRow}>
+                <span className={styles.previewLabel}>Transaction:</span>
+                <span className={styles.previewVal}>
+                  {deletingTransaction.note || deletingTransaction.category || 'Transaction'}
+                </span>
+              </div>
+              <div className={styles.previewRow}>
+                <span className={styles.previewLabel}>Category:</span>
+                <span className={styles.previewVal}>
+                  {deletingTransaction.category || '—'}
+                </span>
+              </div>
+              <div className={styles.previewRow}>
+                <span className={styles.previewLabel}>Date:</span>
+                <span className={styles.previewVal}>
+                  {deletingTransaction.date || '—'}
+                </span>
+              </div>
+              <div className={styles.previewRow}>
+                <span className={styles.previewLabel}>Amount:</span>
+                <span className={deletingTransaction.type === 'income' ? styles.amountIncome : styles.amountExpense}>
+                  {deletingTransaction.type === 'income' ? '+' : '-'}₹
+                  {Number(deletingTransaction.amount || 0).toLocaleString()}
+                </span>
+              </div>
+            </div>
+
+            <p className={styles.deleteWarningText}>
+              This action cannot be undone. The amount will be removed from your activity and account balance.
+            </p>
+
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.cancelBtn}
+                onClick={() => setDeletingTransaction(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.dangerSubmitBtn}
+                onClick={confirmDeleteTransaction}
+              >
+                Delete Transaction
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ==================================================================== */}
+      {/* 7. MODAL: REMOVE ACCOUNT CONFIRMATION                                */}
+      {/* ==================================================================== */}
+      {deletingAccount && (
+        <div className={styles.modalOverlay} onClick={() => setDeletingAccount(null)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <div>
+                <h3 className={styles.modalTitle}>Remove Account</h3>
+                <p className={styles.modalSub}>Are you sure you want to remove this account?</p>
+              </div>
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={() => setDeletingAccount(null)}
+              >
+                <XMarkIcon className={styles.closeIcon} />
+              </button>
+            </div>
+
+            <div className={styles.deletePreviewCard}>
+              <div className={styles.previewRow}>
+                <span className={styles.previewLabel}>Account Name:</span>
+                <span className={styles.previewVal}>{deletingAccount.name}</span>
+              </div>
+              <div className={styles.previewRow}>
+                <span className={styles.previewLabel}>Account Type:</span>
+                <span className={styles.previewVal}>{deletingAccount.type}</span>
+              </div>
+              <div className={styles.previewRow}>
+                <span className={styles.previewLabel}>Current Balance:</span>
+                <span className={styles.previewVal}>₹{getAccountBalance(deletingAccount).toLocaleString()}</span>
+              </div>
+            </div>
+
+            <p className={styles.deleteWarningText}>
+              Removing this account will also remove all its recorded deposits and transactions from your transaction history and total net worth.
+            </p>
+
+            <div className={styles.modalActions}>
+              <button
+                type="button"
+                className={styles.cancelBtn}
+                onClick={() => setDeletingAccount(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className={styles.dangerSubmitBtn}
+                onClick={confirmDeleteAccount}
+              >
+                Remove Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
     </div>
   );

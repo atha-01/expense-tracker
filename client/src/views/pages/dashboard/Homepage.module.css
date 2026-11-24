@@ -1002,3 +1002,60 @@
   width: 15px !important;
   height: 15px !important;
 }
+/* ========================================================================== */
+/* Delete & Remove Confirmation Modals                                        */
+/* ========================================================================== */
+.deletePreviewCard {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+:global([data-theme='light']) .deletePreviewCard {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.previewRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.88rem;
+}
+
+.previewLabel {
+  color: var(--text-secondary);
+}
+
+.previewVal {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.deleteWarningText {
+  font-size: 0.82rem;
+  color: #ef4444;
+  line-height: 1.4;
+  margin-bottom: 16px;
+}
+
+.dangerSubmitBtn {
+  padding: 9px 20px;
+  border-radius: 9999px;
+  background-color: #ef4444;
+  color: #ffffff;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+  transition: all 0.15s ease;
+}
+
+.dangerSubmitBtn:hover {
+  background-color: #dc2626;
+}
